@@ -122,7 +122,17 @@ export default function Landing() {
       <footer className="border-t border-border py-10">
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="font-serif italic text-lg">Varsham</p>
-          <p className="uppercase-label text-muted-foreground">© {new Date().getFullYear()} — Built for citizen safety</p>
+          <p className="uppercase-label text-muted-foreground">
+            © {new Date().getFullYear()} — Built by Hemanth ·{" "}
+            <a
+              href="https://github.com/hemchdev"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-foreground transition"
+            >
+              GitHub
+            </a>
+          </p>
         </div>
       </footer>
     </div>
