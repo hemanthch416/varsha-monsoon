@@ -2,132 +2,132 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Varsha design system — calm blue/teal, monsoon-inspired.
+   All colors are HSL tokens; never hardcode colors in components. */
 
 @layer base {
   :root {
-    --background: 0 0% 99%;
-    --foreground: 0 0% 20%;
+    --background: 205 45% 98%;
+    --foreground: 210 30% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 20%;
+    --card-foreground: 210 30% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 20%;
+    --popover-foreground: 210 30% 15%;
 
-    --primary: 150 15% 70%;
+    --primary: 200 85% 42%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 20%;
+    --secondary: 190 40% 94%;
+    --secondary-foreground: 200 60% 25%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 50%;
+    --muted: 205 30% 95%;
+    --muted-foreground: 210 15% 45%;
 
-    --accent: 150 20% 95%;
-    --accent-foreground: 0 0% 25%;
+    --accent: 185 60% 92%;
+    --accent-foreground: 195 65% 25%;
 
-    --destructive: 0 70% 55%;
+    --destructive: 0 78% 52%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 92%;
-    --input: 0 0% 92%;
-    --ring: 150 15% 70%;
+    --border: 205 25% 88%;
+    --input: 205 25% 90%;
+    --ring: 200 85% 42%;
 
-    --radius: 0.5rem;
-    
-    --hero-gradient: linear-gradient(135deg, hsl(150 10% 85% / 0.3), hsl(0 0% 95% / 0.2));
-    --overlay-gradient: linear-gradient(180deg, transparent 0%, hsl(0 0% 0% / 0.4) 100%);
-    --soft-shadow: 0 2px 8px hsl(0 0% 0% / 0.04);
-    --hover-shadow: 0 4px 16px hsl(0 0% 0% / 0.08);
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Severity system — used across alerts, badges, buttons */
+    --sev-normal: 155 60% 40%;
+    --sev-normal-foreground: 0 0% 100%;
+    --sev-watch: 40 95% 50%;
+    --sev-watch-foreground: 30 60% 15%;
+    --sev-warning: 28 92% 50%;
+    --sev-warning-foreground: 0 0% 100%;
+    --sev-severe: 12 82% 48%;
+    --sev-severe-foreground: 0 0% 100%;
+    --sev-emergency: 0 78% 45%;
+    --sev-emergency-foreground: 0 0% 100%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --gradient-sky: linear-gradient(180deg, hsl(200 85% 55%) 0%, hsl(195 70% 42%) 100%);
+    --gradient-monsoon: linear-gradient(135deg, hsl(200 60% 35%) 0%, hsl(215 55% 25%) 100%);
+    --shadow-soft: 0 2px 12px hsl(200 40% 20% / 0.06);
+    --shadow-elev: 0 8px 28px hsl(200 40% 20% / 0.10);
 
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 205 45% 98%;
+    --sidebar-foreground: 210 30% 20%;
+    --sidebar-primary: 200 85% 42%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 190 40% 94%;
+    --sidebar-accent-foreground: 200 60% 25%;
+    --sidebar-border: 205 25% 88%;
+    --sidebar-ring: 200 85% 42%;
   }
 
   .dark {
-    --background: 30 20% 12%;
-    --foreground: 40 30% 95%;
+    --background: 215 40% 8%;
+    --foreground: 200 20% 92%;
 
-    --card: 30 18% 15%;
-    --card-foreground: 40 30% 95%;
+    --card: 215 35% 12%;
+    --card-foreground: 200 20% 92%;
 
-    --popover: 30 18% 15%;
-    --popover-foreground: 40 30% 95%;
+    --popover: 215 35% 12%;
+    --popover-foreground: 200 20% 92%;
 
-    --primary: 140 40% 55%;
-    --primary-foreground: 30 20% 10%;
+    --primary: 195 80% 55%;
+    --primary-foreground: 215 40% 10%;
 
-    --secondary: 30 15% 20%;
-    --secondary-foreground: 40 30% 95%;
+    --secondary: 215 30% 18%;
+    --secondary-foreground: 200 20% 92%;
 
-    --muted: 30 15% 22%;
-    --muted-foreground: 40 15% 65%;
+    --muted: 215 30% 16%;
+    --muted-foreground: 205 15% 65%;
 
-    --accent: 140 35% 25%;
-    --accent-foreground: 140 40% 90%;
+    --accent: 200 50% 22%;
+    --accent-foreground: 195 70% 85%;
 
-    --destructive: 0 65% 50%;
-    --destructive-foreground: 40 30% 95%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 30 15% 25%;
-    --input: 30 15% 25%;
-    --ring: 140 40% 60%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 215 30% 20%;
+    --input: 215 30% 20%;
+    --ring: 195 80% 55%;
+
+    --sev-normal: 155 55% 45%;
+    --sev-watch: 42 90% 55%;
+    --sev-watch-foreground: 30 60% 12%;
+    --sev-warning: 28 88% 55%;
+    --sev-severe: 12 78% 55%;
+    --sev-emergency: 0 78% 55%;
+
+    --gradient-sky: linear-gradient(180deg, hsl(210 60% 20%) 0%, hsl(215 55% 12%) 100%);
+    --gradient-monsoon: linear-gradient(135deg, hsl(210 60% 18%) 0%, hsl(220 55% 10%) 100%);
+    --shadow-soft: 0 2px 12px hsl(0 0% 0% / 0.35);
+    --shadow-elev: 0 8px 28px hsl(0 0% 0% / 0.45);
+
+    --sidebar-background: 215 40% 10%;
+    --sidebar-foreground: 200 20% 92%;
+    --sidebar-primary: 195 80% 55%;
+    --sidebar-primary-foreground: 215 40% 10%;
+    --sidebar-accent: 215 30% 18%;
+    --sidebar-accent-foreground: 200 20% 92%;
+    --sidebar-border: 215 30% 20%;
+    --sidebar-ring: 195 80% 55%;
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
+  * { @apply border-border; }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
-  
-  html {
-    scroll-behavior: smooth;
-  }
+  html { scroll-behavior: smooth; }
 }
 
 @layer utilities {
-  .smooth-hover {
-    @apply transition-all duration-400 ease-out;
-  }
-  
-  .hover-lift {
-    @apply hover:scale-105 hover:shadow-xl transition-all duration-400;
-  }
-  
-  .text-balance {
-    text-wrap: balance;
-  }
-  
-  .uppercase-label {
-    @apply uppercase tracking-wider text-xs font-normal;
-  }
+  .bg-gradient-sky { background: var(--gradient-sky); }
+  .bg-gradient-monsoon { background: var(--gradient-monsoon); }
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-elev { box-shadow: var(--shadow-elev); }
 }
