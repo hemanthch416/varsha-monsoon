@@ -46,11 +46,6 @@ export default function Checklist() {
 
   const [newLabel, setNewLabel] = useState("");
 
-  const updateItems = (items: ChecklistItem[]) => {
-    if (!query.data) return;
-    queryClient.setQueryData<ChecklistRow>(["checklist", user?.id], { ...query.data, items });
-    mutation.mutate({ id: query.data.id, items });
-  };
 
   // Stable callback references let the memoized `ChecklistItemRow` skip re-render
   // for rows whose item object didn't change during a toggle.
