@@ -1,11 +1,17 @@
-import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { z } from "npm:zod@3";
 import { callGateway } from "../_shared/ai-gateway.ts";
+import { buildCorsHeaders, jsonResponse } from "../_shared/cors.ts";
+import { checkRateLimit, serviceClient } from "../_shared/rateLimit.ts";
 
 const LANG_NAMES: Record<string, string> = {
   en: "English", hi: "Hindi (हिन्दी)", kn: "Kannada (ಕನ್ನಡ)",
 };
+
+// Client body is intentionally tiny — the profile is loaded server-side.
+const BodySchema = z.object({
+  regenerate: z.boolean().optional().default(false),
+});
 
 const ProfileSchema = z.object({
   city: z.string().nullable(),
@@ -26,7 +32,8 @@ const PlanSchema = z.object({
   household_specific_notes: z.array(z.string()).min(1),
 });
 
-// Stable stringify to hash profile deterministically.
+const MAX_REQUESTS_PER_MINUTE = 3;
+
 function stableStringify(obj: Record<string, unknown>): string {
   return JSON.stringify(Object.keys(obj).sort().reduce((a, k) => { a[k] = obj[k]; return a; }, {} as Record<string, unknown>));
 }
@@ -43,11 +50,11 @@ function buildPrompt(profile: z.infer<typeof ProfileSchema>): string {
 Generate a personalized monsoon preparedness plan for this household. Respond ONLY with valid JSON matching this exact schema — no prose, no code fences:
 
 {
-  "immediate_actions": string[],       // 4-6 concrete actions to take within 24-48 hours
-  "essential_supplies": string[],       // 6-10 items with quantities tailored to household size
-  "evacuation_considerations": string[],// 3-5 items considering housing type and locality
-  "communication_plan": string[],       // 3-5 items (emergency contacts, meeting points, check-ins)
-  "household_specific_notes": string[]  // 3-6 items tailored to elderly/children/pets/housing
+  "immediate_actions": string[],
+  "essential_supplies": string[],
+  "evacuation_considerations": string[],
+  "communication_plan": string[],
+  "household_specific_notes": string[]
 }
 
 Household profile:
@@ -58,7 +65,7 @@ Household profile:
 - Pets: ${profile.has_pets ? "yes" : "no"}
 - Housing type: ${profile.housing_type ?? "unspecified"}
 
-CRITICAL LANGUAGE INSTRUCTION: Write EVERY string in the response entirely in ${langName}. Do not mix languages. Use natural, everyday phrasing a local resident would understand. Keep JSON keys in English (as in the schema).`;
+CRITICAL LANGUAGE INSTRUCTION: Write EVERY string in the response entirely in ${langName}. Do not mix languages. Keep JSON keys in English.`;
 }
 
 async function generateAndParse(apiKey: string, profile: z.infer<typeof ProfileSchema>): Promise<z.infer<typeof PlanSchema>> {
@@ -76,36 +83,63 @@ async function generateAndParse(apiKey: string, profile: z.infer<typeof ProfileS
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const cors = buildCorsHeaders(req);
+  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
+  if (req.method !== "POST") return jsonResponse({ error: "Method not allowed" }, 405, cors);
 
   try {
     const apiKey = Deno.env.get("LOVABLE_API_KEY");
-    if (!apiKey) throw new Error("LOVABLE_API_KEY missing");
+    if (!apiKey) {
+      console.error("generate-preparedness-plan: LOVABLE_API_KEY missing");
+      return jsonResponse({ error: "Service unavailable" }, 503, cors);
+    }
 
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) return new Response(JSON.stringify({ error: "Missing auth" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if (!authHeader?.startsWith("Bearer ")) return jsonResponse({ error: "Unauthorized" }, 401, cors);
 
-    const supabase = createClient(
+    const rawText = await req.text();
+    if (rawText.length > 2000) return jsonResponse({ error: "Payload too large" }, 413, cors);
+    let bodyJson: unknown;
+    try { bodyJson = JSON.parse(rawText || "{}"); }
+    catch { return jsonResponse({ error: "Invalid JSON" }, 400, cors); }
+
+    const parsedBody = BodySchema.safeParse(bodyJson);
+    if (!parsedBody.success) {
+      return jsonResponse({ error: "Invalid request", fields: parsedBody.error.flatten().fieldErrors }, 400, cors);
+    }
+    const forceRegen = parsedBody.data.regenerate;
+
+    const anon = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
       { global: { headers: { Authorization: authHeader } } },
     );
+    const { data: userRes, error: userErr } = await anon.auth.getUser();
+    if (userErr || !userRes?.user) return jsonResponse({ error: "Unauthorized" }, 401, cors);
+    const user = userRes.user;
 
-    const anon = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: authHeader } } });
-    const { data: { user } } = await anon.auth.getUser();
-    if (!user) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const svc = serviceClient();
 
-    const body = await req.json().catch(() => ({}));
-    const forceRegen = body?.regenerate === true;
+    // Rate limit: plan generation is expensive → 3/min per user.
+    const rl = await checkRateLimit(svc, user.id, "generate-preparedness-plan", MAX_REQUESTS_PER_MINUTE);
+    if (!rl.allowed) {
+      return new Response(JSON.stringify({ error: "Too many requests. Please try again in a moment." }), {
+        status: 429,
+        headers: { ...cors, "Content-Type": "application/json", "Retry-After": String(rl.retryAfterSeconds) },
+      });
+    }
 
-    // Load profile from DB — do not trust client-sent profile.
-    const { data: profileRow, error: profileErr } = await supabase
+    // Load profile from DB — never trust a client-sent profile.
+    const { data: profileRow, error: profileErr } = await svc
       .from("profiles")
       .select("city, locality, household_size, has_elderly, has_children, has_pets, housing_type, language")
       .eq("id", user.id)
       .maybeSingle();
-    if (profileErr) throw profileErr;
-    if (!profileRow) return new Response(JSON.stringify({ error: "Profile not found" }), { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if (profileErr) {
+      console.error("profile load error:", profileErr.message);
+      return jsonResponse({ error: "Could not load profile" }, 500, cors);
+    }
+    if (!profileRow) return jsonResponse({ error: "Profile not found" }, 404, cors);
 
     const profile = ProfileSchema.parse(profileRow);
     const hash = await sha256(stableStringify({
@@ -115,12 +149,12 @@ Deno.serve(async (req) => {
     }));
 
     if (!forceRegen) {
-      const { data: cached } = await supabase
+      const { data: cached } = await svc
         .from("preparedness_plans")
         .select("plan")
         .eq("user_id", user.id).eq("profile_hash", hash).eq("language", profile.language)
         .maybeSingle();
-      if (cached) return new Response(JSON.stringify({ plan: cached.plan, cached: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      if (cached) return jsonResponse({ plan: cached.plan, cached: true }, 200, cors);
     }
 
     // Generate — one retry on parse failure, then error.
@@ -131,24 +165,22 @@ Deno.serve(async (req) => {
         plan = await generateAndParse(apiKey, profile);
       } catch (e) {
         lastErr = e;
-        console.error(`Plan generation attempt ${attempt + 1} failed:`, e);
+        console.error(`Plan attempt ${attempt + 1} failed:`, e instanceof Error ? e.message : e);
       }
     }
     if (!plan) {
-      return new Response(JSON.stringify({ error: "Could not generate a valid plan. Please try again shortly.", details: String(lastErr) }), {
-        status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      // Do NOT return upstream error details to the client.
+      return jsonResponse({ error: "Could not generate a valid plan. Please try again shortly." }, 502, cors);
     }
+    void lastErr;
 
-    await supabase.from("preparedness_plans").upsert({
+    await svc.from("preparedness_plans").upsert({
       user_id: user.id, profile_hash: hash, language: profile.language, plan,
     }, { onConflict: "user_id,profile_hash,language" });
 
-    return new Response(JSON.stringify({ plan, cached: false }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return jsonResponse({ plan, cached: false }, 200, cors);
   } catch (err) {
-    console.error("generate-preparedness-plan error:", err);
-    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    console.error("generate-preparedness-plan error:", err instanceof Error ? err.message : err);
+    return jsonResponse({ error: "Something went wrong. Please try again." }, 500, cors);
   }
 });
