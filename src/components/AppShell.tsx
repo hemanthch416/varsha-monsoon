@@ -47,7 +47,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   const handleSignOut = async () => { await signOut(); navigate("/"); };
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-dvh flex bg-background">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-foreground focus:text-background focus:rounded"
+      >
+        Skip to main content
+      </a>
       <aside className="hidden md:flex w-60 flex-col border-r border-border bg-sidebar p-6 gap-10 sticky top-0 h-screen self-start overflow-y-auto">
         <Link to="/" className="flex items-baseline gap-2">
           <span className="font-serif italic text-xl">Varsha</span>
@@ -83,7 +89,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </SheetContent>
           </Sheet>
         </header>
-        <main className="flex-1 px-6 md:px-12 py-10 md:py-16">
+        <main id="main-content" tabIndex={-1} className="flex-1 px-6 md:px-12 py-10 md:py-16 focus:outline-none">
           <h1 className="sr-only">{title}</h1>
           {children}
         </main>
