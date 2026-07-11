@@ -52,10 +52,23 @@ export default function Checklist() {
     mutation.mutate({ id: query.data.id, items });
   };
 
-  const toggle = (item: ChecklistItem) => {
-    if (!query.data) return;
-    updateItems(query.data.items.map(i => i.id === item.id ? { ...i, done: !i.done } : i));
-  };
+  // Stable callback references let the memoized `ChecklistItemRow` skip re-render
+  // for rows whose item object didn't change during a toggle.
+  const toggle = useCallback((item: ChecklistItem) => {
+    const data = queryClient.getQueryData<ChecklistRow>(["checklist", user?.id]);
+    if (!data) return;
+    const items = data.items.map(i => i.id === item.id ? { ...i, done: !i.done } : i);
+    queryClient.setQueryData<ChecklistRow>(["checklist", user?.id], { ...data, items });
+    mutation.mutate({ id: data.id, items });
+  }, [queryClient, mutation, user?.id]);
+
+  const removeItem = useCallback((id: string) => {
+    const data = queryClient.getQueryData<ChecklistRow>(["checklist", user?.id]);
+    if (!data) return;
+    const items = data.items.filter(i => i.id !== id);
+    queryClient.setQueryData<ChecklistRow>(["checklist", user?.id], { ...data, items });
+    mutation.mutate({ id: data.id, items });
+  }, [queryClient, mutation, user?.id]);
 
   const addCustom = (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,13 +78,10 @@ export default function Checklist() {
       toast({ title: "Too long", description: "Keep items under 140 characters.", variant: "destructive" });
       return;
     }
-    updateItems([...query.data.items, { id: crypto.randomUUID(), label, category: "Custom", done: false }]);
+    const items = [...query.data.items, { id: crypto.randomUUID(), label, category: "Custom", done: false }];
+    queryClient.setQueryData<ChecklistRow>(["checklist", user?.id], { ...query.data, items });
+    mutation.mutate({ id: query.data.id, items });
     setNewLabel("");
-  };
-
-  const removeItem = (id: string) => {
-    if (!query.data) return;
-    updateItems(query.data.items.filter(i => i.id !== id));
   };
 
   const resetToPersonalized = async () => {
