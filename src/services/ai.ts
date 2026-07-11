@@ -8,7 +8,7 @@ export async function fetchPreparednessPlan(regenerate = false): Promise<Prepare
   });
   if (error) throw new Error(error.message ?? "Failed to fetch plan");
   if (!data?.plan) throw new Error("No plan returned");
-  return preparednessPlanSchema.parse(data.plan);
+  return preparednessPlanSchema.parse(data.plan) as PreparednessPlan;
 }
 
 export async function askAssistant(message: string): Promise<string> {

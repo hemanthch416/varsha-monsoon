@@ -18,7 +18,7 @@ const housingLabels: Record<typeof housingTypes[number], string> = {
   ground_floor: "Ground floor", high_rise: "High rise", near_river: "Near river/lake", low_lying: "Low-lying area", other: "Other",
 };
 const languageLabels: Record<typeof languages[number], string> = {
-  en: "English", hi: "हिन्दी", mr: "मराठी", ta: "தமிழ்", bn: "বাংলা",
+  en: "English", hi: "हिन्दी", kn: "ಕನ್ನಡ",
 };
 
 export default function Settings() {
