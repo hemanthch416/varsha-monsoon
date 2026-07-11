@@ -5,12 +5,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 
 // Mocks — no real network in tests.
-const completeOnboardingMock = vi.fn();
-const navigateMock = vi.fn();
-const toastMock = vi.fn();
+const { completeOnboardingMock, navigateMock, toastMock } = vi.hoisted(() => ({
+  completeOnboardingMock: vi.fn(),
+  navigateMock: vi.fn(),
+  toastMock: vi.fn(),
+}));
 
 vi.mock("@/services/profile", () => ({
-  completeOnboarding: (...args: unknown[]) => completeOnboardingMock(...args),
+  completeOnboarding: completeOnboardingMock,
   getProfile: vi.fn(async () => null),
 }));
 vi.mock("@/hooks/useAuth", () => ({
