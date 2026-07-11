@@ -13,12 +13,19 @@ export interface AlertState {
   sourceIds: string[];
 }
 
-// Derive the single overall status from active alerts + weather warnings.
-// Rules:
-//  - Any DURING alert OR severe/emergency active weather warning → DURING
-//  - Any BEFORE alert OR watch/warning weather warning with rain in the next 12h → BEFORE
-//  - Any recent AFTER alert (starts_at within 72h) and no active issue → AFTER
-//  - Otherwise → BEFORE with severity "normal" (calm)
+/**
+ * Classify the overall alert state for a user by combining stored alerts with
+ * live weather warnings.
+ *
+ * Precedence (highest wins):
+ *  1. `during` — any active `during` alert or `severe`/`emergency` weather warning.
+ *  2. `before` — any `before` alert or `watch`/`warning` weather warning.
+ *  3. `after`  — an `after` alert whose `starts_at` is within the last 72 hours.
+ *  4. Calm    — synthetic `before` state at `normal` severity.
+ *
+ * When multiple items contribute, the highest severity (via `severityRank`)
+ * supplies the headline/description. `sourceIds` lists every contributor.
+ */
 export function deriveAlertState(
   alerts: Alert[],
   weather: WeatherData | null,
