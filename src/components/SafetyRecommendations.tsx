@@ -63,7 +63,7 @@ export function SafetyRecommendations({ state, profile }: Props) {
       <div className="mt-14 border-t border-border pt-8">
         <div className="flex items-end justify-between gap-4 flex-wrap mb-6">
           <div>
-            <p className="uppercase-label text-muted-foreground mb-2">Ask Varsha for more</p>
+            <p className="uppercase-label text-muted-foreground mb-2">Ask Varsham for more</p>
             <p className="font-serif text-lg italic text-muted-foreground max-w-lg">
               Get AI-tailored guidance for your household and the current alert.
             </p>

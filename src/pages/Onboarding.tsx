@@ -55,7 +55,7 @@ export default function Onboarding() {
           <div className="h-8 w-8 rounded-lg bg-gradient-sky flex items-center justify-center">
             <Cloud className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="font-semibold">Varsha</span>
+          <span className="font-semibold">Varsham</span>
         </div>
         <h1 className="text-2xl font-semibold mb-2">Tell us about your household</h1>
         <p className="text-sm text-muted-foreground mb-8">We'll use this to personalize your preparedness plan and alerts.</p>

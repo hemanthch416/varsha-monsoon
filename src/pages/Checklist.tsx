@@ -118,7 +118,7 @@ export default function Checklist() {
         </header>
 
         <header className="hidden print:block">
-          <h2 className="font-serif text-3xl">Varsha — Emergency checklist</h2>
+          <h2 className="font-serif text-3xl">Varsham — Emergency checklist</h2>
           <p className="text-sm mt-1">
             {profileQuery.data?.locality ?? profileQuery.data?.city ?? "Household"} · Printed {new Date().toLocaleDateString()}
           </p>

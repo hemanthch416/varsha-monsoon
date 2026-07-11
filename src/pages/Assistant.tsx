@@ -82,7 +82,7 @@ export default function Assistant() {
       <div className="max-w-3xl mx-auto flex flex-col h-[calc(100vh-8rem)]">
         <header className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <p className="uppercase-label text-muted-foreground mb-2">Ask Varsha</p>
+            <p className="uppercase-label text-muted-foreground mb-2">Ask Varsham</p>
             <h2 className="font-serif text-3xl md:text-4xl">
               A calm second <em>opinion</em>, in your language.
             </h2>

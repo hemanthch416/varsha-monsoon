@@ -45,7 +45,7 @@ async function sha256(input: string): Promise<string> {
 
 function buildPrompt(profile: z.infer<typeof ProfileSchema>): string {
   const langName = LANG_NAMES[profile.language] ?? "English";
-  return `You are Varsha, a monsoon preparedness expert for households in India.
+  return `You are Varsham, a monsoon preparedness expert for households in India.
 
 Generate a personalized monsoon preparedness plan for this household. Respond ONLY with valid JSON matching this exact schema — no prose, no code fences:
 

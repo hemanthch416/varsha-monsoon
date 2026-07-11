@@ -1,6 +1,6 @@
-# Varsha — A quiet guide through the monsoon
+# Varsham — A quiet guide through the monsoon
 
-Varsha is a weather-aware preparedness companion for households in monsoon-affected
+Varsham is a weather-aware preparedness companion for households in monsoon-affected
 regions of India. It turns raw weather data and civic alerts into calm, personalised
 guidance — before, during, and after severe weather events.
 

@@ -42,7 +42,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const title = nav.find(n => location.pathname.startsWith(n.to))?.label ?? "Varsha";
+  const title = nav.find(n => location.pathname.startsWith(n.to))?.label ?? "Varsham";
 
   const handleSignOut = async () => { await signOut(); navigate("/"); };
 
@@ -56,7 +56,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </a>
       <aside className="hidden md:flex w-60 flex-col border-r border-border bg-sidebar p-6 gap-10 sticky top-0 h-screen self-start overflow-y-auto">
         <Link to="/" className="flex items-baseline gap-2">
-          <span className="font-serif italic text-xl">Varsha</span>
+          <span className="font-serif italic text-xl">Varsham</span>
           <span className="uppercase-label text-muted-foreground">वर्षा</span>
         </Link>
         <NavItems />
@@ -73,7 +73,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="flex-1 flex flex-col min-w-0">
         <AlertBanner />
         <header className="md:hidden sticky top-0 z-30 glass border-b border-border px-6 py-4 flex items-center justify-between">
-          <Link to="/" className="font-serif italic text-lg">Varsha</Link>
+          <Link to="/" className="font-serif italic text-lg">Varsham</Link>
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Open navigation menu"><Menu className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" /></Button>

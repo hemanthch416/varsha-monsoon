@@ -12,7 +12,7 @@ a[aria-label*="lovable" i][aria-label*="edit" i] {
   pointer-events: none !important;
 }
 
-/* Varsha — editorial minimal aesthetic (Wild Haven inspired).
+/* Varsham — editorial minimal aesthetic (Wild Haven inspired).
    Warm off-white base, deep slate ink, quiet teal accent. Severity system preserved. */
 
 @layer base {
