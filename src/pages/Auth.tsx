@@ -48,12 +48,33 @@ export default function Auth() {
         toast({ title: "Check your email", description: "Confirm your address to finish signing up." });
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Something went wrong";
+      // Translate common Supabase auth errors into plain-English messages.
+      const raw = err instanceof Error ? err.message : "Something went wrong";
+      const message = friendlyAuthError(raw, mode);
       toast({ title: "Authentication failed", description: message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
   };
+
+  // Maps 422 / weak-password / already-registered errors to actionable guidance.
+  function friendlyAuthError(raw: string, mode: "signin" | "signup"): string {
+    const lower = raw.toLowerCase();
+    if (lower.includes("already registered") || lower.includes("user already"))
+      return "An account with this email already exists. Try signing in instead.";
+    if (lower.includes("weak_password") || lower.includes("password should") || lower.includes("password is too weak"))
+      return "Password too weak. Use at least 8 characters with a mix of letters, numbers, and symbols.";
+    if (lower.includes("pwned") || lower.includes("has been found in a data breach") || lower.includes("compromised"))
+      return "This password has appeared in a known data breach. Please choose a different password.";
+    if (lower.includes("invalid login") || lower.includes("invalid credentials"))
+      return mode === "signin" ? "Email or password is incorrect." : raw;
+    if (lower.includes("email not confirmed"))
+      return "Please confirm your email — check your inbox for the verification link.";
+    if (lower.includes("rate limit"))
+      return "Too many attempts. Please wait a minute and try again.";
+    return raw;
+  }
+
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
