@@ -13,8 +13,7 @@ const baseProfile: Profile = {
   housing_type: "high_rise",
   language: "en",
   notifications_enabled: true,
-  onboarding_complete: true,
-} as Profile;
+} as unknown as Profile;
 
 const categories = (items: ReturnType<typeof buildPersonalizedChecklist>) =>
   new Set(items.map((i) => i.category));
