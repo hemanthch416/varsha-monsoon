@@ -4,16 +4,18 @@ import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 
-const askAssistantMock = vi.fn();
-const listChatMock = vi.fn();
-const toastMock = vi.fn();
+const { askAssistantMock, listChatMock, toastMock } = vi.hoisted(() => ({
+  askAssistantMock: vi.fn(),
+  listChatMock: vi.fn(),
+  toastMock: vi.fn(),
+}));
 
 vi.mock("@/services/ai", () => ({
-  askAssistant: (...args: unknown[]) => askAssistantMock(...args),
+  askAssistant: askAssistantMock,
   fetchPreparednessPlan: vi.fn(),
 }));
 vi.mock("@/services/chat", () => ({
-  listChat: (...args: unknown[]) => listChatMock(...args),
+  listChat: listChatMock,
   appendChat: vi.fn(),
 }));
 vi.mock("@/services/profile", () => ({
