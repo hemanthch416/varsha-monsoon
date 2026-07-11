@@ -314,9 +314,9 @@ const WatchHero = memo(function WatchHero({ state }: { state: ReturnType<typeof 
       )}
     </section>
   );
-}
+});
 
-function UrgentHero({ state }: { state: ReturnType<typeof useAlertState>["state"] }) {
+const UrgentHero = memo(function UrgentHero({ state }: { state: ReturnType<typeof useAlertState>["state"] }) {
   return (
     <section
       className="border-l-2 border-severity-severe bg-severity-severe/5 pl-6 pr-6 py-8 rounded-sm"
