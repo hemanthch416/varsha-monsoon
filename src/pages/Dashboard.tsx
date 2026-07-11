@@ -2,11 +2,14 @@ import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { ArrowRight, RefreshCw, ThermometerSun, ShieldAlert, Droplets, Phone, ListChecks } from "lucide-react";
+import { ArrowRight, RefreshCw, ThermometerSun, ShieldAlert, Droplets, ListChecks } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { SeverityBadge } from "@/components/SeverityBadge";
 import { EmptyState } from "@/components/EmptyState";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { EmergencyContacts } from "@/components/EmergencyContacts";
+import { SafetyRecommendations } from "@/components/SafetyRecommendations";
+import { SafetyDisclaimer } from "@/components/SafetyDisclaimer";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchPreparednessPlan } from "@/services/ai";
@@ -33,12 +36,6 @@ const RECOVERY_GUIDANCE = [
   { title: "Electrical safety", body: "Do not switch on appliances that were submerged. Have a qualified electrician inspect wiring before restoring power." },
 ];
 
-const EMERGENCY_CONTACTS = [
-  { label: "National emergency", number: "112" },
-  { label: "Ambulance", number: "108" },
-  { label: "Disaster mgmt (NDRF)", number: "011-26701700" },
-  { label: "Flood helpline", number: "1078" },
-];
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -100,10 +97,19 @@ export default function Dashboard() {
         {/* DURING: emergency contacts + checklist surface up top */}
         {state.status === "during" && (
           <>
-            <EmergencyContactsSection />
+            <EmergencyContacts cityOrLocality={profileQuery.data?.locality ?? city} emphasized />
             <ChecklistLinkSection />
           </>
         )}
+
+        {/* Safety recommendations — rule-based + optional AI */}
+        <SafetyRecommendations state={state} profile={profileQuery.data ?? null} />
+
+        {/* Emergency contacts — always visible, not just during events */}
+        {state.status !== "during" && (
+          <EmergencyContacts cityOrLocality={profileQuery.data?.locality ?? city} />
+        )}
+
 
         {/* Weather */}
         <section className="grid md:grid-cols-5 gap-12 items-start">
@@ -232,8 +238,10 @@ export default function Dashboard() {
                 </article>
               ))}
             </div>
+            <SafetyDisclaimer className="mt-8" />
           </section>
         )}
+
 
         {/* Personalized plan — de-emphasized during DURING (but still available) */}
         <section className={cn("border-t border-border pt-8", state.status === "during" && "opacity-60")}>
@@ -336,24 +344,6 @@ function RecoveryHero({ state }: { state: ReturnType<typeof useAlertState>["stat
   );
 }
 
-function EmergencyContactsSection() {
-  return (
-    <section className="border-l-2 border-severity-severe pl-6">
-      <div className="flex items-center gap-2 mb-6">
-        <Phone className="h-4 w-4 text-severity-severe" strokeWidth={1.75} />
-        <p className="uppercase-label text-severity-severe">Emergency contacts</p>
-      </div>
-      <ul className="grid sm:grid-cols-2 gap-4">
-        {EMERGENCY_CONTACTS.map(c => (
-          <li key={c.number} className="flex items-baseline justify-between border-b border-border pb-3">
-            <span className="text-sm">{c.label}</span>
-            <a href={`tel:${c.number}`} className="font-serif text-xl hover:underline">{c.number}</a>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
 
 function ChecklistLinkSection() {
   return (

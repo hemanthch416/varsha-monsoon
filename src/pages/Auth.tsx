@@ -9,8 +9,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 
 const schema = z.object({
-  email: z.string().email("Enter a valid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  email: z.string().trim().email("Enter a valid email").max(255),
+  password: z.string().min(8, "Password must be at least 8 characters").max(72, "Password is too long"),
 });
 
 export default function Auth() {
@@ -48,12 +48,33 @@ export default function Auth() {
         toast({ title: "Check your email", description: "Confirm your address to finish signing up." });
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Something went wrong";
+      // Translate common Supabase auth errors into plain-English messages.
+      const raw = err instanceof Error ? err.message : "Something went wrong";
+      const message = friendlyAuthError(raw, mode);
       toast({ title: "Authentication failed", description: message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
   };
+
+  // Maps 422 / weak-password / already-registered errors to actionable guidance.
+  function friendlyAuthError(raw: string, mode: "signin" | "signup"): string {
+    const lower = raw.toLowerCase();
+    if (lower.includes("already registered") || lower.includes("user already"))
+      return "An account with this email already exists. Try signing in instead.";
+    if (lower.includes("weak_password") || lower.includes("password should") || lower.includes("password is too weak"))
+      return "Password too weak. Use at least 8 characters with a mix of letters, numbers, and symbols.";
+    if (lower.includes("pwned") || lower.includes("has been found in a data breach") || lower.includes("compromised"))
+      return "This password has appeared in a known data breach. Please choose a different password.";
+    if (lower.includes("invalid login") || lower.includes("invalid credentials"))
+      return mode === "signin" ? "Email or password is incorrect." : raw;
+    if (lower.includes("email not confirmed"))
+      return "Please confirm your email — check your inbox for the verification link.";
+    if (lower.includes("rate limit"))
+      return "Too many attempts. Please wait a minute and try again.";
+    return raw;
+  }
+
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -82,7 +103,13 @@ export default function Auth() {
             <div className="space-y-2">
               <Label htmlFor="password" className="uppercase-label text-muted-foreground">Password</Label>
               <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)}
+                minLength={8} autoComplete={mode === "signin" ? "current-password" : "new-password"}
                 className="border-0 border-b border-border rounded-none bg-transparent px-0 focus-visible:ring-0 focus-visible:border-foreground" required />
+              {mode === "signup" && (
+                <p className="text-xs text-muted-foreground/70 font-light">
+                  Minimum 8 characters. Avoid common or previously breached passwords.
+                </p>
+              )}
             </div>
             <Button type="submit" className="w-full rounded-full uppercase-label py-6 bg-foreground text-background hover:bg-foreground/90" disabled={loading}>
               {loading ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
