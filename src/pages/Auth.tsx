@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ export default function Auth() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -102,9 +103,19 @@ export default function Auth() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="password" className="uppercase-label text-muted-foreground">Password</Label>
-              <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)}
-                minLength={8} autoComplete={mode === "signin" ? "current-password" : "new-password"}
-                className="border-0 border-b border-border rounded-none bg-transparent px-0 focus-visible:ring-0 focus-visible:border-foreground" required />
+              <div className="relative">
+                <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)}
+                  minLength={8} autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                  className="border-0 border-b border-border rounded-none bg-transparent px-0 pr-8 focus-visible:ring-0 focus-visible:border-foreground" required />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(s => !s)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
               {mode === "signup" && (
                 <p className="text-xs text-muted-foreground/70 font-light">
                   Minimum 8 characters. Avoid common or previously breached passwords.
