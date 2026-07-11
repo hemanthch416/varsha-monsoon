@@ -15,7 +15,7 @@ export async function getOrCreateChecklist(userId: string): Promise<ChecklistRow
 
   const { data: created, error: insertErr } = await supabase
     .from("checklists")
-    .insert({ user_id: userId, items: defaultChecklist })
+    .insert({ user_id: userId, items: defaultChecklist as unknown as never })
     .select()
     .single();
   if (insertErr) throw insertErr;
@@ -23,6 +23,6 @@ export async function getOrCreateChecklist(userId: string): Promise<ChecklistRow
 }
 
 export async function saveChecklist(id: string, items: ChecklistItem[]): Promise<void> {
-  const { error } = await supabase.from("checklists").update({ items }).eq("id", id);
+  const { error } = await supabase.from("checklists").update({ items: items as unknown as never }).eq("id", id);
   if (error) throw error;
 }
