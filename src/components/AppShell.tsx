@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
+import { AlertBanner } from "@/components/AlertBanner";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -64,6 +65,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
+        <AlertBanner />
         <header className="md:hidden sticky top-0 z-30 glass border-b border-border px-6 py-4 flex items-center justify-between">
           <Link to="/" className="font-serif italic text-lg">Varsha</Link>
           <Sheet>
