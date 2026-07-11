@@ -20,7 +20,7 @@ const housingLabels: Record<typeof housingTypes[number], string> = {
   other: "Other",
 };
 const languageLabels: Record<typeof languages[number], string> = {
-  en: "English", hi: "हिन्दी", mr: "मराठी", ta: "தமிழ்", bn: "বাংলা",
+  en: "English", hi: "हिन्दी", kn: "ಕನ್ನಡ",
 };
 
 export default function Onboarding() {
