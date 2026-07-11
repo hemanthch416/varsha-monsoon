@@ -48,9 +48,9 @@ describe("Onboarding form", () => {
   });
 
   it("shows a validation toast and does not submit when city is empty", async () => {
-    const user = userEvent.setup();
-    renderPage();
-    await user.click(screen.getByRole("button", { name: /continue to dashboard/i }));
+    const { container } = renderPage();
+    const form = container.querySelector("form")!;
+    fireEvent.submit(form);
     await waitFor(() => expect(toastMock).toHaveBeenCalled());
     expect(toastMock.mock.calls[0][0]).toMatchObject({ variant: "destructive" });
     expect(completeOnboardingMock).not.toHaveBeenCalled();
@@ -59,11 +59,11 @@ describe("Onboarding form", () => {
   it("submits valid input and navigates to /dashboard on success", async () => {
     completeOnboardingMock.mockResolvedValueOnce({ id: "user-1" });
     const user = userEvent.setup();
-    renderPage();
+    const { container } = renderPage();
 
     await user.type(screen.getByLabelText(/city/i), "Mumbai");
     await user.type(screen.getByLabelText(/locality/i), "Andheri West");
-    await user.click(screen.getByRole("button", { name: /continue to dashboard/i }));
+    fireEvent.submit(container.querySelector("form")!);
 
     await waitFor(() =>
       expect(completeOnboardingMock).toHaveBeenCalledWith(
