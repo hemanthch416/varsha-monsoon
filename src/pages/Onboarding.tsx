@@ -11,17 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { completeOnboarding } from "@/services/profile";
 import { onboardingSchema, housingTypes, languages, type OnboardingInput } from "@/utils/schemas";
-
-const housingLabels: Record<typeof housingTypes[number], string> = {
-  ground_floor: "Ground floor",
-  high_rise: "High rise",
-  near_river: "Near river/lake",
-  low_lying: "Low-lying area",
-  other: "Other",
-};
-const languageLabels: Record<typeof languages[number], string> = {
-  en: "English", hi: "हिन्दी", kn: "ಕನ್ನಡ",
-};
+import { housingLabels, languageLabels } from "@/config/labels";
 
 export default function Onboarding() {
   const { user } = useAuth();
