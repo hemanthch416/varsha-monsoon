@@ -344,10 +344,10 @@ const RecoveryHero = memo(function RecoveryHero({ state }: { state: ReturnType<t
       <p className="mt-3 text-muted-foreground max-w-2xl font-light leading-relaxed">{state.description}</p>
     </section>
   );
-}
+});
 
 
-function ChecklistLinkSection() {
+const ChecklistLinkSection = memo(function ChecklistLinkSection() {
   return (
     <section className="border-l-2 border-severity-severe pl-6">
       <div className="flex items-center gap-2 mb-4">
@@ -360,9 +360,9 @@ function ChecklistLinkSection() {
       <Button asChild variant="outline" size="sm"><Link to="/checklist">Open full checklist</Link></Button>
     </section>
   );
-}
+});
 
-function RainStrip({ hourly }: { hourly: { time: string; rainMm: number; precipProb: number }[] }) {
+const RainStrip = memo(function RainStrip({ hourly }: { hourly: { time: string; rainMm: number; precipProb: number }[] }) {
   const max = Math.max(1, ...hourly.map(h => h.rainMm));
   return (
     <div className="flex items-end gap-1 h-24">
@@ -382,4 +382,4 @@ function RainStrip({ hourly }: { hourly: { time: string; rainMm: number; precipP
       })}
     </div>
   );
-}
+});
