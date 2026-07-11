@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide the "Edit with Lovable" badge on published deployments without
+   reserving layout space. */
+#lovable-badge,
+a[href*="lovable.dev"][class*="badge" i],
+a[aria-label*="lovable" i][aria-label*="edit" i] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 /* Varsha — editorial minimal aesthetic (Wild Haven inspired).
    Warm off-white base, deep slate ink, quiet teal accent. Severity system preserved. */
 
