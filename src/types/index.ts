@@ -1,6 +1,6 @@
 export type Severity = "normal" | "watch" | "warning" | "severe" | "emergency";
 export type AlertStatus = "before" | "during" | "after";
-export type Language = "en" | "hi" | "mr" | "ta" | "bn";
+export type Language = "en" | "hi" | "kn";
 export type HousingType = "ground_floor" | "high_rise" | "near_river" | "low_lying" | "other";
 
 export interface Profile {
@@ -57,4 +57,12 @@ export interface TravelAdvisory {
   severity: Severity;
   summary: string;
   hazards: string[];
+}
+
+export interface PreparednessPlan {
+  immediate_actions: string[];
+  essential_supplies: string[];
+  evacuation_considerations: string[];
+  communication_plan: string[];
+  household_specific_notes: string[];
 }

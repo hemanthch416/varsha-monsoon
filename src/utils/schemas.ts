@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const housingTypes = ["ground_floor", "high_rise", "near_river", "low_lying", "other"] as const;
-export const languages = ["en", "hi", "mr", "ta", "bn"] as const;
+export const languages = ["en", "hi", "kn"] as const;
 
 export const onboardingSchema = z.object({
   city: z.string().trim().min(2, "City is required").max(80),
@@ -30,3 +30,12 @@ export const chatMessageSchema = z.object({
   message: z.string().trim().min(1, "Message required").max(2000),
 });
 export type ChatMessageInput = z.infer<typeof chatMessageSchema>;
+
+// Client-side validator for edge-function plan responses.
+export const preparednessPlanSchema = z.object({
+  immediate_actions: z.array(z.string()).min(1),
+  essential_supplies: z.array(z.string()).min(1),
+  evacuation_considerations: z.array(z.string()).min(1),
+  communication_plan: z.array(z.string()).min(1),
+  household_specific_notes: z.array(z.string()).min(1),
+});
