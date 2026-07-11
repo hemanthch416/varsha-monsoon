@@ -173,30 +173,13 @@ export default function Checklist() {
                   <p className="uppercase-label text-muted-foreground mb-6">{category}</p>
                   <ul className="space-y-4">
                     {items.map(item => (
-                      <li key={item.id} className="group flex items-start gap-4">
-                        <Checkbox
-                          checked={item.done}
-                          onCheckedChange={() => toggle(item)}
-                          id={item.id}
-                          className="mt-1 print:hidden"
-                        />
-                        <span className="hidden print:inline mt-0.5">☐</span>
-                        <label
-                          htmlFor={item.id}
-                          className={`flex-1 text-sm md:text-base leading-relaxed cursor-pointer ${item.done ? "line-through text-muted-foreground" : ""}`}
-                        >
-                          {item.label}
-                        </label>
-                        {category === "Custom" && (
-                          <button
-                            onClick={() => removeItem(item.id)}
-                            aria-label="Remove"
-                            className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition print:hidden"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} />
-                          </button>
-                        )}
-                      </li>
+                      <ChecklistItemRow
+                        key={item.id}
+                        item={item}
+                        removable={category === "Custom"}
+                        onToggle={toggle}
+                        onRemove={removeItem}
+                      />
                     ))}
                   </ul>
                 </section>
