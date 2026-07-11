@@ -103,7 +103,13 @@ export default function Auth() {
             <div className="space-y-2">
               <Label htmlFor="password" className="uppercase-label text-muted-foreground">Password</Label>
               <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)}
+                minLength={8} autoComplete={mode === "signin" ? "current-password" : "new-password"}
                 className="border-0 border-b border-border rounded-none bg-transparent px-0 focus-visible:ring-0 focus-visible:border-foreground" required />
+              {mode === "signup" && (
+                <p className="text-xs text-muted-foreground/70 font-light">
+                  Minimum 8 characters. Avoid common or previously breached passwords.
+                </p>
+              )}
             </div>
             <Button type="submit" className="w-full rounded-full uppercase-label py-6 bg-foreground text-background hover:bg-foreground/90" disabled={loading}>
               {loading ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
