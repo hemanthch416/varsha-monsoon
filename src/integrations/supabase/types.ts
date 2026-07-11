@@ -14,7 +14,141 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      alerts: {
+        Row: {
+          created_at: string
+          ends_at: string | null
+          id: string
+          message: string
+          region: string
+          severity: string
+          starts_at: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          message: string
+          region: string
+          severity: string
+          starts_at?: string
+          status: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          message?: string
+          region?: string
+          severity?: string
+          starts_at?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      chat_history: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      checklists: {
+        Row: {
+          created_at: string
+          id: string
+          items: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          items?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          items?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          city: string | null
+          created_at: string
+          has_children: boolean | null
+          has_elderly: boolean | null
+          has_pets: boolean | null
+          household_size: number | null
+          housing_type: string | null
+          id: string
+          language: string | null
+          locality: string | null
+          notifications_enabled: boolean | null
+          onboarded: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          has_children?: boolean | null
+          has_elderly?: boolean | null
+          has_pets?: boolean | null
+          household_size?: number | null
+          housing_type?: string | null
+          id: string
+          language?: string | null
+          locality?: string | null
+          notifications_enabled?: boolean | null
+          onboarded?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          has_children?: boolean | null
+          has_elderly?: boolean | null
+          has_pets?: boolean | null
+          household_size?: number | null
+          housing_type?: string | null
+          id?: string
+          language?: string | null
+          locality?: string | null
+          notifications_enabled?: boolean | null
+          onboarded?: boolean | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
