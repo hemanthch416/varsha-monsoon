@@ -238,8 +238,10 @@ export default function Dashboard() {
                 </article>
               ))}
             </div>
+            <SafetyDisclaimer className="mt-8" />
           </section>
         )}
+
 
         {/* Personalized plan — de-emphasized during DURING (but still available) */}
         <section className={cn("border-t border-border pt-8", state.status === "during" && "opacity-60")}>
