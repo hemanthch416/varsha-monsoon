@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -49,10 +49,12 @@ export function LanguageSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger
         aria-label={`Change language, current language ${currentLabel}`}
-        className="uppercase-label text-muted-foreground hover:text-foreground transition border border-border rounded-full px-3 py-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        className="inline-flex items-center gap-2 uppercase-label text-muted-foreground hover:text-foreground transition border border-border rounded-full px-3 py-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
-        {currentLabel}
+        <span>{currentLabel}</span>
+        <ChevronDown className="h-3.5 w-3.5 opacity-70" strokeWidth={1.5} aria-hidden="true" />
       </DropdownMenuTrigger>
+
       <DropdownMenuContent align="end">
         {languageOptions.map(opt => (
           <DropdownMenuItem key={opt.value} onClick={() => mutation.mutate(opt.value)} className="flex items-center justify-between gap-4">
