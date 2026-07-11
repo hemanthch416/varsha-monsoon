@@ -2,11 +2,14 @@ import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { ArrowRight, RefreshCw, ThermometerSun, ShieldAlert, Droplets, Phone, ListChecks } from "lucide-react";
+import { ArrowRight, RefreshCw, ThermometerSun, ShieldAlert, Droplets, ListChecks } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { SeverityBadge } from "@/components/SeverityBadge";
 import { EmptyState } from "@/components/EmptyState";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { EmergencyContacts } from "@/components/EmergencyContacts";
+import { SafetyRecommendations } from "@/components/SafetyRecommendations";
+import { SafetyDisclaimer } from "@/components/SafetyDisclaimer";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchPreparednessPlan } from "@/services/ai";
@@ -33,12 +36,6 @@ const RECOVERY_GUIDANCE = [
   { title: "Electrical safety", body: "Do not switch on appliances that were submerged. Have a qualified electrician inspect wiring before restoring power." },
 ];
 
-const EMERGENCY_CONTACTS = [
-  { label: "National emergency", number: "112" },
-  { label: "Ambulance", number: "108" },
-  { label: "Disaster mgmt (NDRF)", number: "011-26701700" },
-  { label: "Flood helpline", number: "1078" },
-];
 
 export default function Dashboard() {
   const { user } = useAuth();
