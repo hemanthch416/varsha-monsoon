@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Cloud, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -22,9 +22,7 @@ export default function Auth() {
   const { toast } = useToast();
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
-      if (s) navigate("/dashboard");
-    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => { if (s) navigate("/dashboard"); });
     supabase.auth.getSession().then(({ data }) => { if (data.session) navigate("/dashboard"); });
     return () => sub.subscription.unsubscribe();
   }, [navigate]);
@@ -58,40 +56,45 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 bg-gradient-monsoon">
-      <div className="w-full max-w-sm bg-card rounded-2xl p-8 shadow-elev">
-        <Link to="/" className="text-xs text-muted-foreground inline-flex items-center gap-1 mb-6 hover:text-foreground">
+    <div className="min-h-screen bg-background flex flex-col">
+      <header className="container mx-auto py-6">
+        <Link to="/" className="uppercase-label text-muted-foreground hover:text-foreground inline-flex items-center gap-2">
           <ArrowLeft className="h-3 w-3" /> Back
         </Link>
-        <div className="flex items-center gap-2 mb-6">
-          <div className="h-8 w-8 rounded-lg bg-gradient-sky flex items-center justify-center">
-            <Cloud className="h-4 w-4 text-primary-foreground" />
+      </header>
+      <div className="flex-1 flex items-center justify-center px-6">
+        <div className="w-full max-w-sm">
+          <div className="text-center mb-12">
+            <p className="font-serif italic text-2xl mb-2">Varsha</p>
+            <h1 className="font-serif text-3xl md:text-4xl">
+              {mode === "signin" ? "Welcome back." : "Begin your plan."}
+            </h1>
+            <p className="text-sm text-muted-foreground mt-3 font-light">
+              {mode === "signin" ? "Sign in to your preparedness plan." : "A few quiet questions to get started."}
+            </p>
           </div>
-          <span className="font-semibold">Varsha</span>
+          <form onSubmit={submit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="uppercase-label text-muted-foreground">Email</Label>
+              <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)}
+                className="border-0 border-b border-border rounded-none bg-transparent px-0 focus-visible:ring-0 focus-visible:border-foreground" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="uppercase-label text-muted-foreground">Password</Label>
+              <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)}
+                className="border-0 border-b border-border rounded-none bg-transparent px-0 focus-visible:ring-0 focus-visible:border-foreground" required />
+            </div>
+            <Button type="submit" className="w-full rounded-full uppercase-label py-6 bg-foreground text-background hover:bg-foreground/90" disabled={loading}>
+              {loading ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
+            </Button>
+          </form>
+          <button
+            onClick={() => setMode(m => m === "signin" ? "signup" : "signin")}
+            className="mt-8 uppercase-label text-muted-foreground hover:text-foreground w-full text-center transition"
+          >
+            {mode === "signin" ? "Need an account? Sign up" : "Already have an account? Sign in"}
+          </button>
         </div>
-        <h1 className="text-xl font-semibold mb-1">{mode === "signin" ? "Welcome back" : "Create your account"}</h1>
-        <p className="text-sm text-muted-foreground mb-6">
-          {mode === "signin" ? "Sign in to your preparedness plan." : "Get a personalized monsoon plan for your household."}
-        </p>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
-          </Button>
-        </form>
-        <button
-          onClick={() => setMode(m => m === "signin" ? "signup" : "signin")}
-          className="mt-6 text-xs text-muted-foreground hover:text-foreground w-full text-center"
-        >
-          {mode === "signin" ? "Need an account? Sign up" : "Already have an account? Sign in"}
-        </button>
       </div>
     </div>
   );

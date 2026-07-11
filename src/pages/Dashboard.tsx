@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { CloudRain, Droplets, Wind, ThermometerSun, ArrowRight, ListChecks, MessageSquare, MapPin } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, ThermometerSun } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { SeverityBadge } from "@/components/SeverityBadge";
 import { EmptyState } from "@/components/EmptyState";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { listAlerts } from "@/services/alerts";
 import { mockWeather } from "@/services/mockData";
@@ -19,118 +19,114 @@ export default function Dashboard() {
 
   const weather = mockWeather;
   const activeAlerts = (alertsQuery.data ?? []).filter(a => a.status !== "after").slice(0, 3);
+  const greeting = profileQuery.data?.locality ? `${profileQuery.data.locality}` : profileQuery.data?.city ?? "Today";
 
   return (
     <AppShell>
-      <div className="space-y-8 max-w-6xl">
-        <div>
-          <p className="text-sm text-muted-foreground">
-            {profileQuery.isLoading ? "Loading…" : `Hi${profileQuery.data?.locality ? `, ${profileQuery.data.locality}` : ""}`}
-          </p>
-          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">Your monsoon overview</h2>
-        </div>
+      <div className="space-y-24 max-w-5xl">
+        {/* Header */}
+        <motion.header
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}
+        >
+          <p className="uppercase-label text-muted-foreground mb-6">{greeting}</p>
+          <h2 className="font-serif text-4xl md:text-6xl leading-[1.05]">
+            The sky today, <em>and what it asks of you.</em>
+          </h2>
+        </motion.header>
 
-        {/* Weather card */}
-        <section className="rounded-2xl bg-gradient-sky text-primary-foreground p-6 md:p-8 shadow-elev">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-widest opacity-80">Current weather</p>
-              <p className="text-lg font-medium mt-1">{weather.city}</p>
-              <p className="text-4xl md:text-5xl font-semibold mt-2">{weather.tempC}°C</p>
-              <p className="opacity-90 mt-1">{weather.condition}</p>
+        {/* Weather + summary two-column */}
+        <section className="grid md:grid-cols-5 gap-12 items-start">
+          <div className="md:col-span-3 border-t border-border pt-8">
+            <p className="uppercase-label text-muted-foreground mb-8">Current conditions</p>
+            <div className="flex items-baseline gap-4">
+              <span className="font-serif text-7xl md:text-8xl">{weather.tempC}°</span>
+              <span className="font-serif italic text-2xl text-muted-foreground">{weather.condition.toLowerCase()}</span>
             </div>
-            <div className="grid grid-cols-3 gap-4 min-w-[280px]">
-              <Stat icon={<Droplets className="h-4 w-4" />} label="Humidity" value={`${weather.humidity}%`} />
-              <Stat icon={<CloudRain className="h-4 w-4" />} label="Rain" value={`${weather.rainfallMm}mm`} />
-              <Stat icon={<Wind className="h-4 w-4" />} label="Wind" value={`${weather.windKph}km/h`} />
-            </div>
+            <p className="mt-4 text-muted-foreground">{weather.city}, coastal maharashtra</p>
+            <dl className="mt-12 grid grid-cols-3 gap-8">
+              {[
+                ["Humidity", `${weather.humidity}%`],
+                ["Rainfall", `${weather.rainfallMm} mm`],
+                ["Wind", `${weather.windKph} km/h`],
+              ].map(([k, v]) => (
+                <div key={k}>
+                  <dt className="uppercase-label text-muted-foreground mb-2">{k}</dt>
+                  <dd className="font-serif text-2xl">{v}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
+
+          <aside className="md:col-span-2 md:border-l md:border-border md:pl-12 md:pt-8 border-t border-border pt-8">
+            <p className="uppercase-label text-muted-foreground mb-6">Your plan</p>
+            <ul className="space-y-5">
+              {[
+                ["Before", 3, 5],
+                ["During", 1, 4],
+                ["After", 0, 3],
+              ].map(([label, done, total]) => {
+                const pct = Math.round((Number(done) / Number(total)) * 100);
+                return (
+                  <li key={label as string}>
+                    <div className="flex items-baseline justify-between mb-2">
+                      <span className="uppercase-label">{label}</span>
+                      <span className="text-xs text-muted-foreground">{done} / {total}</span>
+                    </div>
+                    <div className="h-px bg-border relative">
+                      <div className="absolute inset-y-0 left-0 bg-foreground" style={{ width: `${pct}%`, height: "1px" }} />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            <Link to="/checklist" className="uppercase-label text-foreground/80 hover:text-foreground inline-flex items-center gap-2 mt-8">
+              Open checklist <ArrowRight className="h-3 w-3" />
+            </Link>
+          </aside>
         </section>
 
         {/* Alerts */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Active alerts</h3>
-          </div>
+        <section className="border-t border-border pt-8">
+          <p className="uppercase-label text-muted-foreground mb-8">Active alerts</p>
           {alertsQuery.isLoading ? (
-            <div className="space-y-3">{[1,2].map(i => <Skeleton key={i} className="h-24 w-full" />)}</div>
+            <div className="space-y-4">{[1,2].map(i => <Skeleton key={i} className="h-24 w-full" />)}</div>
           ) : alertsQuery.isError ? (
             <EmptyState title="Couldn't load alerts" description="Please try again shortly." />
           ) : activeAlerts.length === 0 ? (
-            <EmptyState icon={<ThermometerSun className="h-8 w-8" />} title="No active alerts" description="Your area is currently calm. We'll notify you if that changes." />
+            <EmptyState icon={<ThermometerSun className="h-6 w-6" strokeWidth={1.5} />} title="No active alerts" description="Your area is calm. We'll notify you if that changes." />
           ) : (
-            <div className="grid gap-3">
+            <div className="grid gap-4">
               {activeAlerts.map(a => (
-                <article key={a.id} className={`rounded-xl border-l-4 bg-card p-4 shadow-soft ${severityBorderClass[a.severity]}`}>
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <SeverityBadge severity={a.severity} />
-                        <span className="text-xs text-muted-foreground">{a.region}</span>
-                      </div>
-                      <p className="font-medium">{a.title}</p>
-                      <p className="text-sm text-muted-foreground mt-1">{a.message}</p>
-                    </div>
+                <article key={a.id} className={`border-l-2 pl-6 py-2 ${severityBorderClass[a.severity]}`}>
+                  <div className="flex items-center gap-3 mb-2">
+                    <SeverityBadge severity={a.severity} />
+                    <span className="uppercase-label text-muted-foreground">{a.region}</span>
                   </div>
+                  <h3 className="font-serif text-xl md:text-2xl mb-2">{a.title}</h3>
+                  <p className="text-muted-foreground max-w-2xl font-light leading-relaxed">{a.message}</p>
                 </article>
               ))}
             </div>
           )}
         </section>
 
-        {/* Preparedness summary */}
-        <section>
-          <h3 className="text-lg font-semibold mb-4">Your preparedness plan</h3>
-          <div className="grid gap-4 md:grid-cols-3">
-            <PlanCard title="Before monsoon" body="Waterproof documents, stock ORS, service drainage." done={3} total={5} />
-            <PlanCard title="During heavy rain" body="Avoid flooded roads, unplug appliances, keep phones charged." done={1} total={4} />
-            <PlanCard title="After the storm" body="Boil water before use, check for mosquito breeding." done={0} total={3} />
-          </div>
-        </section>
-
-        {/* Quick links */}
-        <section className="grid gap-3 md:grid-cols-3">
-          <QuickLink to="/checklist" icon={<ListChecks className="h-5 w-5" />} title="Emergency checklist" />
-          <QuickLink to="/assistant" icon={<MessageSquare className="h-5 w-5" />} title="Ask the AI assistant" />
-          <QuickLink to="/travel" icon={<MapPin className="h-5 w-5" />} title="Travel advisories" />
+        {/* Quick links row */}
+        <section className="border-t border-border pt-8 grid md:grid-cols-3 gap-x-12 gap-y-6">
+          {[
+            { to: "/checklist", label: "Checklist", body: "Track supplies and safety steps." },
+            { to: "/assistant", label: "Ask Varsha", body: "Conversational help in your language." },
+            { to: "/travel", label: "Travel advisories", body: "Check safety before you head out." },
+          ].map(item => (
+            <Link key={item.to} to={item.to} className="group">
+              <p className="uppercase-label text-muted-foreground mb-3">{item.label}</p>
+              <p className="font-serif text-xl group-hover:italic transition">{item.body}</p>
+              <span className="inline-flex items-center gap-2 uppercase-label mt-4 text-foreground/60 group-hover:text-foreground transition">
+                Open <ArrowRight className="h-3 w-3" />
+              </span>
+            </Link>
+          ))}
         </section>
       </div>
     </AppShell>
-  );
-}
-
-function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="bg-white/15 backdrop-blur rounded-lg p-3">
-      <div className="flex items-center gap-1.5 text-xs opacity-90">{icon}{label}</div>
-      <p className="text-lg font-semibold mt-1">{value}</p>
-    </div>
-  );
-}
-
-function PlanCard({ title, body, done, total }: { title: string; body: string; done: number; total: number }) {
-  const pct = Math.round((done / total) * 100);
-  return (
-    <div className="rounded-xl border bg-card p-5 shadow-soft">
-      <p className="font-medium">{title}</p>
-      <p className="text-sm text-muted-foreground mt-1">{body}</p>
-      <div className="mt-4">
-        <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-          <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
-        </div>
-        <p className="text-xs text-muted-foreground mt-2">{done} of {total} steps complete</p>
-      </div>
-    </div>
-  );
-}
-
-function QuickLink({ to, icon, title }: { to: string; icon: React.ReactNode; title: string }) {
-  return (
-    <Link to={to}>
-      <Button variant="outline" className="w-full h-auto py-4 justify-between">
-        <span className="flex items-center gap-3">{icon}{title}</span>
-        <ArrowRight className="h-4 w-4" />
-      </Button>
-    </Link>
   );
 }
