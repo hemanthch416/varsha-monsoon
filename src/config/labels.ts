@@ -16,6 +16,9 @@ export const languageLabels: Record<typeof languages[number], string> = {
   hi: "हिन्दी",
   kn: "ಕನ್ನಡ",
   te: "తెలుగు",
+  ta: "தமிழ்",
+  ml: "മലയാളം",
+  bn: "বাংলা",
 };
 
 /** Label shown when the AlertBanner announces a status transition. */
