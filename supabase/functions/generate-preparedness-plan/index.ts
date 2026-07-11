@@ -5,7 +5,7 @@ import { buildCorsHeaders, jsonResponse } from "../_shared/cors.ts";
 import { checkRateLimit, serviceClient } from "../_shared/rateLimit.ts";
 
 const LANG_NAMES: Record<string, string> = {
-  en: "English", hi: "Hindi (हिन्दी)", kn: "Kannada (ಕನ್ನಡ)", te: "Telugu (తెలుగు)",
+  en: "English", hi: "Hindi (हिन्दी)", kn: "Kannada (ಕನ್ನಡ)", te: "Telugu (తెలుగు)", ta: "Tamil (தமிழ்)", ml: "Malayalam (മലയാളം)", bn: "Bengali (বাংলা)",
 };
 
 // Client body is intentionally tiny — the profile is loaded server-side.

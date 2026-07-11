@@ -1,6 +1,6 @@
 export type Severity = "normal" | "watch" | "warning" | "severe" | "emergency";
 export type AlertStatus = "before" | "during" | "after";
-export type Language = "en" | "hi" | "kn" | "te";
+export type Language = "en" | "hi" | "kn" | "te" | "ta" | "ml" | "bn";
 export type HousingType = "ground_floor" | "high_rise" | "near_river" | "low_lying" | "other";
 
 export interface Profile {
