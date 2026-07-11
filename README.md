@@ -124,6 +124,3 @@ profile per signed-in user; there is no shared demo account.
 
 ---
 
-## License
-
-MIT
