@@ -97,10 +97,19 @@ export default function Dashboard() {
         {/* DURING: emergency contacts + checklist surface up top */}
         {state.status === "during" && (
           <>
-            <EmergencyContactsSection />
+            <EmergencyContacts cityOrLocality={profileQuery.data?.locality ?? city} emphasized />
             <ChecklistLinkSection />
           </>
         )}
+
+        {/* Safety recommendations — rule-based + optional AI */}
+        <SafetyRecommendations state={state} profile={profileQuery.data ?? null} />
+
+        {/* Emergency contacts — always visible, not just during events */}
+        {state.status !== "during" && (
+          <EmergencyContacts cityOrLocality={profileQuery.data?.locality ?? city} />
+        )}
+
 
         {/* Weather */}
         <section className="grid md:grid-cols-5 gap-12 items-start">
