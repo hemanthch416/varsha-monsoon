@@ -70,10 +70,10 @@ describe("Assistant chat flow", () => {
     );
 
     const user = userEvent.setup();
-    renderPage();
+    const { container } = renderPage();
 
     await user.type(screen.getByLabelText(/your question/i), "hello");
-    await user.click(screen.getByRole("button", { name: /send message/i }));
+    fireEvent.submit(container.querySelector("form")!);
 
     // Loading state visible while the request is in-flight.
     await waitFor(() => expect(screen.getByText(/thinking…/i)).toBeInTheDocument());
