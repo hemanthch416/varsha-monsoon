@@ -64,7 +64,7 @@ export function deriveAlertState(
       severity: top.severity,
       headline: top.title,
       description: top.message,
-      eventStart: nextAlert ? new Date(nextAlert.starts_at).getTime() : now + 6 * 3600_000,
+      eventStart: nextAlert ? new Date(nextAlert.starts_at).getTime() : now + DEFAULT_LEAD_TIME_HOURS * HOUR_MS,
       sourceIds: [...before.map(a => a.id), ...weatherSoon.map(w => w.id)],
     };
   }
