@@ -36,12 +36,31 @@ export default function Assistant() {
 
   const sendMutation = useMutation({
     mutationFn: (message: string) => askAssistant(message),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["chat", user?.id] }),
-    onError: (err) => toast({
-      title: "Assistant unavailable",
-      description: err instanceof Error ? err.message : "Try again",
-      variant: "destructive",
-    }),
+    // Optimistic UI: show the user message immediately so the composer doesn't
+    // look like it swallowed the input while the model is thinking.
+    onMutate: async (message: string) => {
+      await queryClient.cancelQueries({ queryKey: ["chat", user?.id] });
+      const previous = queryClient.getQueryData<typeof messages>(["chat", user?.id]) ?? [];
+      const optimistic = {
+        id: `optimistic-${Date.now()}`,
+        user_id: user!.id,
+        role: "user" as const,
+        message,
+        created_at: new Date().toISOString(),
+      };
+      queryClient.setQueryData(["chat", user?.id], [...previous, optimistic]);
+      return { previous };
+    },
+    onError: (err, _msg, ctx) => {
+      // Roll back so the user can retry without duplicates.
+      if (ctx?.previous) queryClient.setQueryData(["chat", user?.id], ctx.previous);
+      toast({
+        title: "Assistant unavailable",
+        description: err instanceof Error ? err.message : "Try again",
+        variant: "destructive",
+      });
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["chat", user?.id] }),
   });
 
   useEffect(() => {
@@ -54,6 +73,7 @@ export default function Assistant() {
     sendMutation.mutate(parsed.data.message);
     setInput("");
   };
+
 
   const messages = chatQuery.data ?? [];
 
