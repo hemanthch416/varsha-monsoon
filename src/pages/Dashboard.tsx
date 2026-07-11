@@ -342,24 +342,6 @@ function RecoveryHero({ state }: { state: ReturnType<typeof useAlertState>["stat
   );
 }
 
-function EmergencyContactsSection() {
-  return (
-    <section className="border-l-2 border-severity-severe pl-6">
-      <div className="flex items-center gap-2 mb-6">
-        <Phone className="h-4 w-4 text-severity-severe" strokeWidth={1.75} />
-        <p className="uppercase-label text-severity-severe">Emergency contacts</p>
-      </div>
-      <ul className="grid sm:grid-cols-2 gap-4">
-        {EMERGENCY_CONTACTS.map(c => (
-          <li key={c.number} className="flex items-baseline justify-between border-b border-border pb-3">
-            <span className="text-sm">{c.label}</span>
-            <a href={`tel:${c.number}`} className="font-serif text-xl hover:underline">{c.number}</a>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
 
 function ChecklistLinkSection() {
   return (
