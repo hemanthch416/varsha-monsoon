@@ -34,6 +34,17 @@ class ResizeObserverStub {
 }
 (globalThis as unknown as { ResizeObserver: typeof ResizeObserverStub }).ResizeObserver = ResizeObserverStub;
 
+// jsdom lacks HTMLFormElement.requestSubmit; user-event v14 uses it to submit forms.
+if (!HTMLFormElement.prototype.requestSubmit) {
+  HTMLFormElement.prototype.requestSubmit = function (submitter?: HTMLElement) {
+    if (submitter) {
+      (submitter as HTMLButtonElement).click();
+    } else {
+      this.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    }
+  };
+}
+
 // crypto.randomUUID for happy-dom/jsdom stability
 if (!globalThis.crypto?.randomUUID) {
   Object.defineProperty(globalThis, "crypto", {
