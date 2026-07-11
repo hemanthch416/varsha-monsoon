@@ -2,117 +2,117 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Varsha design system — calm blue/teal, monsoon-inspired.
-   All colors are HSL tokens; never hardcode colors in components. */
+/* Varsha — editorial minimal aesthetic (Wild Haven inspired).
+   Warm off-white base, deep slate ink, quiet teal accent. Severity system preserved. */
 
 @layer base {
   :root {
-    --background: 205 45% 98%;
-    --foreground: 210 30% 15%;
+    --background: 40 30% 97%;
+    --foreground: 200 25% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 210 30% 15%;
+    --card: 40 30% 99%;
+    --card-foreground: 200 25% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 210 30% 15%;
+    --popover: 40 30% 99%;
+    --popover-foreground: 200 25% 15%;
 
-    --primary: 200 85% 42%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 195 55% 28%;
+    --primary-foreground: 40 30% 97%;
 
-    --secondary: 190 40% 94%;
-    --secondary-foreground: 200 60% 25%;
+    --secondary: 40 20% 93%;
+    --secondary-foreground: 200 25% 20%;
 
-    --muted: 205 30% 95%;
-    --muted-foreground: 210 15% 45%;
+    --muted: 40 15% 94%;
+    --muted-foreground: 200 10% 45%;
 
-    --accent: 185 60% 92%;
-    --accent-foreground: 195 65% 25%;
+    --accent: 185 30% 90%;
+    --accent-foreground: 195 55% 22%;
 
-    --destructive: 0 78% 52%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 8 65% 45%;
+    --destructive-foreground: 40 30% 97%;
 
-    --border: 205 25% 88%;
-    --input: 205 25% 90%;
-    --ring: 200 85% 42%;
+    --border: 40 15% 88%;
+    --input: 40 15% 88%;
+    --ring: 195 55% 28%;
 
-    --radius: 0.75rem;
+    --radius: 0.375rem;
 
-    /* Severity system — used across alerts, badges, buttons */
-    --sev-normal: 155 60% 40%;
-    --sev-normal-foreground: 0 0% 100%;
-    --sev-watch: 40 95% 50%;
-    --sev-watch-foreground: 30 60% 15%;
-    --sev-warning: 28 92% 50%;
-    --sev-warning-foreground: 0 0% 100%;
-    --sev-severe: 12 82% 48%;
-    --sev-severe-foreground: 0 0% 100%;
-    --sev-emergency: 0 78% 45%;
-    --sev-emergency-foreground: 0 0% 100%;
+    /* Severity — quieter, editorial */
+    --sev-normal: 155 35% 38%;
+    --sev-normal-foreground: 40 30% 97%;
+    --sev-watch: 38 70% 48%;
+    --sev-watch-foreground: 30 40% 12%;
+    --sev-warning: 25 70% 45%;
+    --sev-warning-foreground: 40 30% 97%;
+    --sev-severe: 12 60% 42%;
+    --sev-severe-foreground: 40 30% 97%;
+    --sev-emergency: 0 65% 40%;
+    --sev-emergency-foreground: 40 30% 97%;
 
-    --gradient-sky: linear-gradient(180deg, hsl(200 85% 55%) 0%, hsl(195 70% 42%) 100%);
-    --gradient-monsoon: linear-gradient(135deg, hsl(200 60% 35%) 0%, hsl(215 55% 25%) 100%);
-    --shadow-soft: 0 2px 12px hsl(200 40% 20% / 0.06);
-    --shadow-elev: 0 8px 28px hsl(200 40% 20% / 0.10);
+    --gradient-mist: linear-gradient(180deg, hsl(200 25% 15% / 0) 0%, hsl(200 25% 15% / 0.55) 100%);
+    --gradient-monsoon: linear-gradient(160deg, hsl(200 30% 20%) 0%, hsl(210 35% 12%) 100%);
+    --shadow-soft: 0 2px 8px hsl(200 20% 15% / 0.04);
+    --shadow-elev: 0 10px 40px -12px hsl(200 30% 15% / 0.15);
 
-    --sidebar-background: 205 45% 98%;
-    --sidebar-foreground: 210 30% 20%;
-    --sidebar-primary: 200 85% 42%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 190 40% 94%;
-    --sidebar-accent-foreground: 200 60% 25%;
-    --sidebar-border: 205 25% 88%;
-    --sidebar-ring: 200 85% 42%;
+    --sidebar-background: 40 30% 97%;
+    --sidebar-foreground: 200 25% 20%;
+    --sidebar-primary: 195 55% 28%;
+    --sidebar-primary-foreground: 40 30% 97%;
+    --sidebar-accent: 40 20% 93%;
+    --sidebar-accent-foreground: 200 25% 20%;
+    --sidebar-border: 40 15% 88%;
+    --sidebar-ring: 195 55% 28%;
   }
 
   .dark {
-    --background: 215 40% 8%;
-    --foreground: 200 20% 92%;
+    --background: 210 30% 8%;
+    --foreground: 40 15% 92%;
 
-    --card: 215 35% 12%;
-    --card-foreground: 200 20% 92%;
+    --card: 210 25% 11%;
+    --card-foreground: 40 15% 92%;
 
-    --popover: 215 35% 12%;
-    --popover-foreground: 200 20% 92%;
+    --popover: 210 25% 11%;
+    --popover-foreground: 40 15% 92%;
 
-    --primary: 195 80% 55%;
-    --primary-foreground: 215 40% 10%;
+    --primary: 185 45% 65%;
+    --primary-foreground: 210 30% 10%;
 
-    --secondary: 215 30% 18%;
-    --secondary-foreground: 200 20% 92%;
+    --secondary: 210 20% 15%;
+    --secondary-foreground: 40 15% 92%;
 
-    --muted: 215 30% 16%;
-    --muted-foreground: 205 15% 65%;
+    --muted: 210 20% 14%;
+    --muted-foreground: 40 10% 65%;
 
-    --accent: 200 50% 22%;
-    --accent-foreground: 195 70% 85%;
+    --accent: 195 30% 20%;
+    --accent-foreground: 185 45% 80%;
 
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 8 60% 50%;
+    --destructive-foreground: 40 15% 92%;
 
-    --border: 215 30% 20%;
-    --input: 215 30% 20%;
-    --ring: 195 80% 55%;
+    --border: 210 20% 18%;
+    --input: 210 20% 18%;
+    --ring: 185 45% 65%;
 
-    --sev-normal: 155 55% 45%;
-    --sev-watch: 42 90% 55%;
-    --sev-watch-foreground: 30 60% 12%;
-    --sev-warning: 28 88% 55%;
-    --sev-severe: 12 78% 55%;
-    --sev-emergency: 0 78% 55%;
+    --sev-normal: 155 40% 50%;
+    --sev-watch: 38 75% 60%;
+    --sev-watch-foreground: 30 40% 10%;
+    --sev-warning: 25 75% 58%;
+    --sev-severe: 12 65% 55%;
+    --sev-emergency: 0 70% 55%;
 
-    --gradient-sky: linear-gradient(180deg, hsl(210 60% 20%) 0%, hsl(215 55% 12%) 100%);
-    --gradient-monsoon: linear-gradient(135deg, hsl(210 60% 18%) 0%, hsl(220 55% 10%) 100%);
-    --shadow-soft: 0 2px 12px hsl(0 0% 0% / 0.35);
-    --shadow-elev: 0 8px 28px hsl(0 0% 0% / 0.45);
+    --gradient-mist: linear-gradient(180deg, hsl(0 0% 0% / 0) 0%, hsl(0 0% 0% / 0.75) 100%);
+    --gradient-monsoon: linear-gradient(160deg, hsl(210 40% 10%) 0%, hsl(220 45% 6%) 100%);
+    --shadow-soft: 0 2px 8px hsl(0 0% 0% / 0.35);
+    --shadow-elev: 0 10px 40px -12px hsl(0 0% 0% / 0.6);
 
-    --sidebar-background: 215 40% 10%;
-    --sidebar-foreground: 200 20% 92%;
-    --sidebar-primary: 195 80% 55%;
-    --sidebar-primary-foreground: 215 40% 10%;
-    --sidebar-accent: 215 30% 18%;
-    --sidebar-accent-foreground: 200 20% 92%;
-    --sidebar-border: 215 30% 20%;
-    --sidebar-ring: 195 80% 55%;
+    --sidebar-background: 210 30% 8%;
+    --sidebar-foreground: 40 15% 92%;
+    --sidebar-primary: 185 45% 65%;
+    --sidebar-primary-foreground: 210 30% 10%;
+    --sidebar-accent: 210 20% 15%;
+    --sidebar-accent-foreground: 40 15% 92%;
+    --sidebar-border: 210 20% 18%;
+    --sidebar-ring: 185 45% 65%;
   }
 }
 
@@ -120,14 +120,23 @@
   * { @apply border-border; }
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-weight: 300;
+    letter-spacing: -0.005em;
   }
   html { scroll-behavior: smooth; }
+  h1, h2, h3, h4 { font-weight: 300; letter-spacing: -0.02em; }
+  .font-serif { font-family: 'Instrument Serif', serif; font-weight: 400; letter-spacing: -0.01em; }
 }
 
 @layer utilities {
-  .bg-gradient-sky { background: var(--gradient-sky); }
+  .bg-gradient-mist { background: var(--gradient-mist); }
   .bg-gradient-monsoon { background: var(--gradient-monsoon); }
   .shadow-soft { box-shadow: var(--shadow-soft); }
   .shadow-elev { box-shadow: var(--shadow-elev); }
+  .uppercase-label {
+    @apply uppercase text-[11px] tracking-[0.15em] font-normal;
+  }
+  .glass {
+    @apply backdrop-blur-md bg-background/60 border border-border/60;
+  }
 }
