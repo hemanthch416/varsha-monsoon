@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { AlertTriangle, X, Info, ShieldAlert } from "lucide-react";
+import { AlertTriangle, X, Info, ShieldAlert, Phone } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "@/services/profile";
 import { useAlertState } from "@/hooks/useAlertState";
+import { findStateHelpline } from "@/components/EmergencyContacts";
 import { cn } from "@/lib/utils";
 
 const STATUS_LABEL = { before: "Watch issued", during: "Active emergency", after: "Recovery phase" } as const;
+
 
 // App-wide notification banner that appears when alert status transitions.
 // A separate aria-live region announces DURING alerts for screen readers.
