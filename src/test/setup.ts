@@ -22,9 +22,17 @@ if (!("PointerEvent" in window)) {
   window.PointerEvent = class extends Event {};
 }
 Element.prototype.scrollIntoView = vi.fn();
+Element.prototype.scrollTo = vi.fn() as unknown as Element["scrollTo"];
 (Element.prototype as unknown as { hasPointerCapture: () => boolean }).hasPointerCapture = vi.fn(() => false);
 (Element.prototype as unknown as { releasePointerCapture: () => void }).releasePointerCapture = vi.fn();
 (Element.prototype as unknown as { setPointerCapture: () => void }).setPointerCapture = vi.fn();
+
+class ResizeObserverStub {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+(globalThis as unknown as { ResizeObserver: typeof ResizeObserverStub }).ResizeObserver = ResizeObserverStub;
 
 // crypto.randomUUID for happy-dom/jsdom stability
 if (!globalThis.crypto?.randomUUID) {
