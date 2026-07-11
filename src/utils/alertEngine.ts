@@ -1,6 +1,9 @@
 import type { Alert, AlertStatus, Severity } from "@/types";
 import type { WeatherData, WeatherWarning } from "@/services/weather";
 import { severityRank } from "./severity";
+import { DEFAULT_LEAD_TIME_HOURS, RECOVERY_WINDOW_HOURS } from "@/config/constants";
+
+const HOUR_MS = 3600_000;
 
 export interface AlertState {
   status: AlertStatus;
@@ -34,7 +37,9 @@ export function deriveAlertState(
   const active = alerts.filter(a => a.status !== "after");
   const during = active.filter(a => a.status === "during");
   const before = active.filter(a => a.status === "before");
-  const after = alerts.filter(a => a.status === "after" && now - new Date(a.starts_at).getTime() < 72 * 3600_000);
+  const after = alerts.filter(
+    a => a.status === "after" && now - new Date(a.starts_at).getTime() < RECOVERY_WINDOW_HOURS * HOUR_MS,
+  );
 
   const weatherSevere = (weather?.warnings ?? []).filter(w => w.severity === "severe" || w.severity === "emergency");
   const weatherSoon = (weather?.warnings ?? []).filter(w => w.severity === "watch" || w.severity === "warning");
@@ -59,7 +64,7 @@ export function deriveAlertState(
       severity: top.severity,
       headline: top.title,
       description: top.message,
-      eventStart: nextAlert ? new Date(nextAlert.starts_at).getTime() : now + 6 * 3600_000,
+      eventStart: nextAlert ? new Date(nextAlert.starts_at).getTime() : now + DEFAULT_LEAD_TIME_HOURS * HOUR_MS,
       sourceIds: [...before.map(a => a.id), ...weatherSoon.map(w => w.id)],
     };
   }

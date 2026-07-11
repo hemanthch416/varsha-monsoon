@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,22 +10,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/EmptyState";
 import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
-import { getProfile, updateSettings } from "@/services/profile";
+import { updateSettings } from "@/services/profile";
 import { settingsSchema, housingTypes, languages, type SettingsInput } from "@/utils/schemas";
-
-const housingLabels: Record<typeof housingTypes[number], string> = {
-  ground_floor: "Ground floor", high_rise: "High rise", near_river: "Near river/lake", low_lying: "Low-lying area", other: "Other",
-};
-const languageLabels: Record<typeof languages[number], string> = {
-  en: "English", hi: "हिन्दी", kn: "ಕನ್ನಡ",
-};
+import { housingLabels, languageLabels } from "@/config/labels";
 
 export default function Settings() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const profileQuery = useQuery({ queryKey: ["profile", user?.id], queryFn: () => getProfile(user!.id), enabled: !!user });
+  const profileQuery = useProfile();
 
   const [form, setForm] = useState<SettingsInput | null>(null);
 

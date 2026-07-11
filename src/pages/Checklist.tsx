@@ -1,38 +1,36 @@
-import { memo, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ListChecks, Plus, Printer, RotateCcw, Trash2 } from "lucide-react";
+import { ListChecks, Plus, Printer, RotateCcw } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { EmptyState } from "@/components/EmptyState";
-import { Checkbox } from "@/components/ui/checkbox";
+import { ChecklistItemRow } from "@/components/checklist/ChecklistItemRow";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
-import { getOrCreateChecklist, resetChecklistToPersonalized, saveChecklist, type ChecklistRow } from "@/services/checklist";
-import { getProfile } from "@/services/profile";
+import {
+  getOrCreateChecklist,
+  resetChecklistToPersonalized,
+  saveChecklist,
+  type ChecklistRow,
+} from "@/services/checklist";
+import { CHECKLIST_CATEGORY_ORDER, CHECKLIST_ITEM_MAX_LEN, STALE_TIME_MS } from "@/config/constants";
 import type { ChecklistItem } from "@/types";
-
-const CATEGORY_ORDER = ["Essentials", "Power", "Documents", "Health", "Safety", "Contacts", "Elderly", "Children", "Pets", "Home", "Custom"];
 
 export default function Checklist() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const profileQuery = useQuery({
-    queryKey: ["profile", user?.id],
-    queryFn: () => getProfile(user!.id),
-    enabled: !!user,
-    // Household profile changes rarely; avoid refetching on every mount / page switch.
-    staleTime: 5 * 60_000,
-  });
+  const profileQuery = useProfile();
 
   const query = useQuery<ChecklistRow>({
     queryKey: ["checklist", user?.id],
     queryFn: () => getOrCreateChecklist(user!.id, profileQuery.data ?? null),
     enabled: !!user && !profileQuery.isLoading,
-    staleTime: 60_000,
+    staleTime: STALE_TIME_MS.short,
   });
 
   const mutation = useMutation({
@@ -45,7 +43,6 @@ export default function Checklist() {
   });
 
   const [newLabel, setNewLabel] = useState("");
-
 
   // Stable callback references let the memoized `ChecklistItemRow` skip re-render
   // for rows whose item object didn't change during a toggle.
@@ -69,8 +66,12 @@ export default function Checklist() {
     e.preventDefault();
     const label = newLabel.trim();
     if (!label || !query.data) return;
-    if (label.length > 140) {
-      toast({ title: "Too long", description: "Keep items under 140 characters.", variant: "destructive" });
+    if (label.length > CHECKLIST_ITEM_MAX_LEN) {
+      toast({
+        title: "Too long",
+        description: `Keep items under ${CHECKLIST_ITEM_MAX_LEN} characters.`,
+        variant: "destructive",
+      });
       return;
     }
     const items = [...query.data.items, { id: crypto.randomUUID(), label, category: "Custom", done: false }];
@@ -92,11 +93,12 @@ export default function Checklist() {
       (acc[it.category] ||= []).push(it);
       return acc;
     }, {});
-    // Order categories consistently
-    return CATEGORY_ORDER
+    const ordered: [string, ChecklistItem[]][] = CHECKLIST_CATEGORY_ORDER
       .filter(c => map[c]?.length)
-      .map(c => [c, map[c]] as const)
-      .concat(Object.entries(map).filter(([c]) => !CATEGORY_ORDER.includes(c)));
+      .map(c => [c, map[c]]);
+    const extras: [string, ChecklistItem[]][] = Object.entries(map)
+      .filter(([c]) => !(CHECKLIST_CATEGORY_ORDER as readonly string[]).includes(c));
+    return [...ordered, ...extras];
   }, [query.data]);
 
   const totalDone = (query.data?.items ?? []).filter(i => i.done).length;
@@ -115,7 +117,6 @@ export default function Checklist() {
           </p>
         </header>
 
-        {/* Print-only header */}
         <header className="hidden print:block">
           <h2 className="font-serif text-3xl">Varsha — Emergency checklist</h2>
           <p className="text-sm mt-1">
@@ -131,7 +132,6 @@ export default function Checklist() {
           <EmptyState icon={<ListChecks className="h-8 w-8" />} title="No items yet" description="Your checklist is empty." />
         ) : (
           <>
-            {/* Progress + actions */}
             <section className="border-t border-border pt-8 flex items-end justify-between gap-6 flex-wrap print:hidden">
               <div>
                 <p className="uppercase-label text-muted-foreground mb-3">Overall progress</p>
@@ -149,7 +149,6 @@ export default function Checklist() {
               </div>
             </section>
 
-            {/* Add custom */}
             <form onSubmit={addCustom} className="border-t border-border pt-8 print:hidden">
               <p className="uppercase-label text-muted-foreground mb-4">Add your own</p>
               <div className="flex gap-2">
@@ -157,7 +156,7 @@ export default function Checklist() {
                   value={newLabel}
                   onChange={e => setNewLabel(e.target.value)}
                   placeholder="e.g. Refill inhaler prescription"
-                  maxLength={140}
+                  maxLength={CHECKLIST_ITEM_MAX_LEN}
                   className="rounded-none border-0 border-b border-border focus-visible:ring-0 focus-visible:border-foreground px-0"
                 />
                 <Button type="submit" variant="ghost" size="sm" className="uppercase-label gap-2" disabled={!newLabel.trim()}>
@@ -166,7 +165,6 @@ export default function Checklist() {
               </div>
             </form>
 
-            {/* Grouped items */}
             <div className="space-y-14">
               {grouped.map(([category, items]) => (
                 <section key={category} className="border-t border-border pt-8">
@@ -191,46 +189,3 @@ export default function Checklist() {
     </AppShell>
   );
 }
-
-/**
- * Row for a single checklist item. Memoized so that toggling one item — which
- * produces new object references for only the changed row — doesn't force every
- * other row in the list to re-render. `onToggle`/`onRemove` from the parent are
- * wrapped in `useCallback` so their identities stay stable across renders.
- */
-interface ChecklistItemRowProps {
-  item: ChecklistItem;
-  removable: boolean;
-  onToggle: (item: ChecklistItem) => void;
-  onRemove: (id: string) => void;
-}
-const ChecklistItemRow = memo(function ChecklistItemRow({
-  item, removable, onToggle, onRemove,
-}: ChecklistItemRowProps) {
-  return (
-    <li className="group flex items-start gap-4">
-      <Checkbox
-        checked={item.done}
-        onCheckedChange={() => onToggle(item)}
-        id={item.id}
-        className="mt-1 print:hidden"
-      />
-      <span className="hidden print:inline mt-0.5">☐</span>
-      <label
-        htmlFor={item.id}
-        className={`flex-1 text-sm md:text-base leading-relaxed cursor-pointer ${item.done ? "line-through text-muted-foreground" : ""}`}
-      >
-        {item.label}
-      </label>
-      {removable && (
-        <button
-          onClick={() => onRemove(item.id)}
-          aria-label={`Remove ${item.label}`}
-          className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition print:hidden"
-        >
-          <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden="true" />
-        </button>
-      )}
-    </li>
-  );
-});

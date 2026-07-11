@@ -1,24 +1,15 @@
 import { useEffect, useState } from "react";
 import { AlertTriangle, X, Info, ShieldAlert, Phone } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { useQuery } from "@tanstack/react-query";
-import { getProfile } from "@/services/profile";
+import { useProfile } from "@/hooks/useProfile";
 import { useAlertState } from "@/hooks/useAlertState";
 import { findStateHelpline } from "@/components/EmergencyContacts";
+import { alertStatusLabel } from "@/config/labels";
 import { cn } from "@/lib/utils";
-
-const STATUS_LABEL = { before: "Watch issued", during: "Active emergency", after: "Recovery phase" } as const;
-
 
 // App-wide notification banner that appears when alert status transitions.
 // A separate aria-live region announces DURING alerts for screen readers.
 export function AlertBanner() {
-  const { user } = useAuth();
-  const profileQuery = useQuery({
-    queryKey: ["profile", user?.id],
-    queryFn: () => getProfile(user!.id),
-    enabled: !!user,
-  });
+  const profileQuery = useProfile();
   const city = profileQuery.data?.city ?? null;
   const { state, transition, dismissTransition } = useAlertState(city);
 
@@ -81,7 +72,7 @@ export function AlertBanner() {
             ? <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" strokeWidth={1.75} aria-hidden="true" />
             : <Info className="h-4 w-4 mt-0.5 shrink-0" strokeWidth={1.75} aria-hidden="true" />}
           <div className="flex-1">
-            <p className="uppercase-label opacity-90">Alert status changed → {STATUS_LABEL[transition!.to]}</p>
+            <p className="uppercase-label opacity-90">Alert status changed → {alertStatusLabel[transition!.to]}</p>
             <p className="mt-1 font-light">{state.headline}</p>
           </div>
           <button
