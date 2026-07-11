@@ -1,10 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { ChecklistItem } from "@/types";
-import { defaultChecklist } from "./mockData";
+import type { ChecklistItem, Profile } from "@/types";
+import { buildPersonalizedChecklist } from "./personalizedChecklist";
 
-interface ChecklistRow { id: string; user_id: string; items: ChecklistItem[] }
+export interface ChecklistRow { id: string; user_id: string; items: ChecklistItem[] }
 
-export async function getOrCreateChecklist(userId: string): Promise<ChecklistRow> {
+// Reads the user's checklist. If none exists, seeds one from the profile so that
+// household-specific items (elderly, children, pets, housing) are present out of the box.
+export async function getOrCreateChecklist(userId: string, profile: Profile | null): Promise<ChecklistRow> {
   const { data, error } = await supabase
     .from("checklists")
     .select("*")
@@ -13,9 +15,10 @@ export async function getOrCreateChecklist(userId: string): Promise<ChecklistRow
   if (error) throw error;
   if (data) return data as unknown as ChecklistRow;
 
+  const seed = buildPersonalizedChecklist(profile);
   const { data: created, error: insertErr } = await supabase
     .from("checklists")
-    .insert({ user_id: userId, items: defaultChecklist as unknown as never })
+    .insert({ user_id: userId, items: seed as unknown as never })
     .select()
     .single();
   if (insertErr) throw insertErr;
@@ -23,6 +26,17 @@ export async function getOrCreateChecklist(userId: string): Promise<ChecklistRow
 }
 
 export async function saveChecklist(id: string, items: ChecklistItem[]): Promise<void> {
-  const { error } = await supabase.from("checklists").update({ items: items as unknown as never }).eq("id", id);
+  const { error } = await supabase
+    .from("checklists")
+    .update({ items: items as unknown as never })
+    .eq("id", id);
   if (error) throw error;
+}
+
+// Replaces the whole item list with a freshly generated personalized set.
+// Used when the user changes household details and wants their checklist rebuilt.
+export async function resetChecklistToPersonalized(id: string, profile: Profile | null): Promise<ChecklistItem[]> {
+  const seed = buildPersonalizedChecklist(profile);
+  await saveChecklist(id, seed);
+  return seed;
 }
