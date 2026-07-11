@@ -1,21 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { listAlerts } from "@/services/alerts";
 import { useWeather } from "./useWeather";
 import { deriveAlertState, type AlertState } from "@/utils/alertEngine";
+import type { Alert } from "@/types";
 
 export interface AlertStateResult {
   state: AlertState;
   weather: ReturnType<typeof useWeather>;
-  alerts: ReturnType<typeof useQuery>;
-  // Fires when the derived status transitions (before → during, etc.)
+  alerts: UseQueryResult<Alert[], Error>;
   transition: { from: AlertState["status"]; to: AlertState["status"] } | null;
   dismissTransition: () => void;
 }
 
 export function useAlertState(city: string | null | undefined): AlertStateResult {
   const weather = useWeather(city);
-  const alerts = useQuery({ queryKey: ["alerts"], queryFn: listAlerts, staleTime: 5 * 60_000 });
+  const alerts = useQuery<Alert[], Error>({ queryKey: ["alerts"], queryFn: listAlerts, staleTime: 5 * 60_000 });
 
   const state = deriveAlertState(alerts.data ?? [], weather.data ?? null);
 
