@@ -22,12 +22,9 @@ if (!("PointerEvent" in window)) {
   window.PointerEvent = class extends Event {};
 }
 Element.prototype.scrollIntoView = vi.fn();
-// @ts-expect-error - jsdom stub
-Element.prototype.hasPointerCapture = vi.fn(() => false);
-// @ts-expect-error - jsdom stub
-Element.prototype.releasePointerCapture = vi.fn();
-// @ts-expect-error - jsdom stub
-Element.prototype.setPointerCapture = vi.fn();
+(Element.prototype as unknown as { hasPointerCapture: () => boolean }).hasPointerCapture = vi.fn(() => false);
+(Element.prototype as unknown as { releasePointerCapture: () => void }).releasePointerCapture = vi.fn();
+(Element.prototype as unknown as { setPointerCapture: () => void }).setPointerCapture = vi.fn();
 
 // crypto.randomUUID for happy-dom/jsdom stability
 if (!globalThis.crypto?.randomUUID) {
