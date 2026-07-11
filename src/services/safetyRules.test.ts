@@ -7,7 +7,9 @@ const baseState = (over: Partial<AlertState> = {}): AlertState => ({
   status: "before",
   severity: "normal",
   headline: "Calm",
-  detail: "",
+  description: "",
+  eventStart: null,
+  sourceIds: [],
   ...over,
 });
 

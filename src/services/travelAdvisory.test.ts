@@ -36,7 +36,7 @@ describe("assessRoute", () => {
 
   it("bumps severity when both weather and flood risk are present", async () => {
     (fetchWeather as any).mockResolvedValue(makeWeather({
-      warnings: [{ severity: "warning", title: "Heavy rain likely" }],
+      warnings: [{ id: "w1", severity: "warning", title: "Heavy rain likely", message: "…", windowHours: 24 }],
     }));
     const r = await assessRoute("Home", "Bengaluru");
     // flood=warning, weather=warning => bump to severe
