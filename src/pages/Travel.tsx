@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Search, AlertTriangle, MapPin, CheckCircle2 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { travelQuerySchema } from "@/utils/schemas";
 import { assessRoute, type TravelAssessment } from "@/services/travelAdvisory";
 import { severityBorderClass } from "@/utils/severity";
@@ -18,6 +19,9 @@ export default function Travel() {
   const { toast } = useToast();
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
+  const debouncedOrigin = useDebouncedValue(origin, 500);
+  const debouncedDestination = useDebouncedValue(destination, 500);
+  const lastFetched = useRef<string>("");
 
   const mutation = useMutation({
     mutationFn: (input: { origin: string; destination: string }) => assessRoute(input.origin, input.destination),
@@ -28,14 +32,33 @@ export default function Travel() {
     }),
   });
 
-  const search = (e: React.FormEvent) => {
-    e.preventDefault();
-    const parsed = travelQuerySchema.safeParse({ origin, destination });
+  const runAdvisory = (o: string, d: string, notifyOnInvalid = false) => {
+    const parsed = travelQuerySchema.safeParse({ origin: o, destination: d });
     if (!parsed.success) {
-      toast({ title: "Check inputs", description: parsed.error.errors[0].message, variant: "destructive" });
+      if (notifyOnInvalid) {
+        toast({ title: "Check inputs", description: parsed.error.errors[0].message, variant: "destructive" });
+      }
       return;
     }
-    mutation.mutate({ origin: parsed.data.origin!, destination: parsed.data.destination! });
+    const key = `${parsed.data.origin}→${parsed.data.destination}`;
+    if (key === lastFetched.current) return;
+    lastFetched.current = key;
+    mutation.mutate({ origin: parsed.data.origin, destination: parsed.data.destination });
+  };
+
+  // Auto-run once both inputs are stable and valid — avoids hammering the API
+  // as the user types, but removes the need to click for the common case.
+  useEffect(() => {
+    if (debouncedOrigin.trim().length >= 2 && debouncedDestination.trim().length >= 2) {
+      runAdvisory(debouncedOrigin, debouncedDestination);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedOrigin, debouncedDestination]);
+
+  const search = (e: React.FormEvent) => {
+    e.preventDefault();
+    lastFetched.current = ""; // force re-run on manual submit
+    runAdvisory(origin, destination, true);
   };
 
   const result = mutation.data;
