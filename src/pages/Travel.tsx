@@ -35,7 +35,7 @@ export default function Travel() {
       toast({ title: "Check inputs", description: parsed.error.errors[0].message, variant: "destructive" });
       return;
     }
-    mutation.mutate(parsed.data);
+    mutation.mutate({ origin: parsed.data.origin!, destination: parsed.data.destination! });
   };
 
   const result = mutation.data;
