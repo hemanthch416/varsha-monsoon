@@ -21,8 +21,8 @@ export interface AlertStateResult {
 export function useAlertState(city: string | null | undefined): AlertStateResult {
   const weather = useWeather(city);
   const alerts = useQuery<Alert[], Error>({
-    queryKey: ["alerts"],
-    queryFn: listAlerts,
+    queryKey: ["alerts", city ?? null],
+    queryFn: () => listAlerts(city),
     staleTime: STALE_TIME_MS.medium,
   });
 
