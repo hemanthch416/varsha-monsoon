@@ -91,10 +91,10 @@ describe("Assistant chat flow", () => {
     askAssistantMock.mockRejectedValueOnce(new Error("boom"));
 
     const user = userEvent.setup();
-    renderPage();
+    const { container } = renderPage();
 
     await user.type(screen.getByLabelText(/your question/i), "hello");
-    await user.click(screen.getByRole("button", { name: /send message/i }));
+    fireEvent.submit(container.querySelector("form")!);
 
     await waitFor(() => expect(toastMock).toHaveBeenCalled());
     expect(toastMock.mock.calls[0][0]).toMatchObject({
