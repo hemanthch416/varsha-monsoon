@@ -16,7 +16,7 @@ interface Props {
 }
 
 const QUICK_ACTIONS: { to: string; label: string }[] = [
-  { to: "/assistant", label: "Ask Varsha" },
+  { to: "/assistant", label: "Ask Varsham" },
   { to: "/checklist", label: "Open checklist" },
   { to: "/travel", label: "Travel advisories" },
 ];

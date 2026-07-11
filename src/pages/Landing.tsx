@@ -21,7 +21,7 @@ export default function Landing() {
       <header className="fixed top-0 inset-x-0 z-50 glass">
         <div className="container mx-auto flex items-center justify-between py-5">
           <Link to="/" className="flex items-baseline gap-2">
-            <span className="font-serif italic text-xl">Varsha</span>
+            <span className="font-serif italic text-xl">Varsham</span>
             <span className="uppercase-label text-muted-foreground">वर्षा</span>
           </Link>
           <nav className="hidden md:flex items-center gap-10">
@@ -58,7 +58,7 @@ export default function Landing() {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.3 }}
             className="mt-10 text-base md:text-lg text-muted-foreground max-w-lg mx-auto font-light leading-relaxed"
           >
-            Varsha builds a preparedness plan for your household — thoughtful, localized, and always at hand.
+            Varsham builds a preparedness plan for your household — thoughtful, localized, and always at hand.
           </motion.p>
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.5 }}
@@ -107,7 +107,7 @@ export default function Landing() {
         <div className="container mx-auto text-center max-w-2xl">
           <p className="uppercase-label text-muted-foreground mb-6">Made in India</p>
           <p className="font-serif text-2xl md:text-4xl leading-snug text-balance">
-            For the ground-floor flat in Kurla, the high-rise in Bandra, the village near the Krishna — Varsha listens to <em>where you actually live</em>.
+            For the ground-floor flat in Kurla, the high-rise in Bandra, the village near the Krishna — Varsham listens to <em>where you actually live</em>.
           </p>
           <div className="mt-14">
             <Link to={ctaTo}>
@@ -121,7 +121,7 @@ export default function Landing() {
 
       <footer className="border-t border-border py-10">
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="font-serif italic text-lg">Varsha</p>
+          <p className="font-serif italic text-lg">Varsham</p>
           <p className="uppercase-label text-muted-foreground">© {new Date().getFullYear()} — Built for citizen safety</p>
         </div>
       </footer>

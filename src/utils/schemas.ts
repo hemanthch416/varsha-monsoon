@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const housingTypes = ["ground_floor", "high_rise", "near_river", "low_lying", "other"] as const;
-export const languages = ["en", "hi", "kn"] as const;
+export const languages = ["en", "hi", "kn", "te"] as const;
 
 export const onboardingSchema = z.object({
   city: z.string().trim().min(2, "City is required").max(80),

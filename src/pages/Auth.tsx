@@ -86,7 +86,7 @@ export default function Auth() {
       <div className="flex-1 flex items-center justify-center px-6">
         <div className="w-full max-w-sm">
           <div className="text-center mb-12">
-            <p className="font-serif italic text-2xl mb-2">Varsha</p>
+            <p className="font-serif italic text-2xl mb-2">Varsham</p>
             <h1 className="font-serif text-3xl md:text-4xl">
               {mode === "signin" ? "Welcome back." : "Begin your plan."}
             </h1>
