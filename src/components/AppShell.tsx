@@ -48,7 +48,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen flex bg-background">
-      <aside className="hidden md:flex w-60 flex-col border-r border-border bg-sidebar p-6 gap-10">
+      <aside className="hidden md:flex w-60 flex-col border-r border-border bg-sidebar p-6 gap-10 sticky top-0 h-screen self-start overflow-y-auto">
         <Link to="/" className="flex items-baseline gap-2">
           <span className="font-serif italic text-xl">Varsha</span>
           <span className="uppercase-label text-muted-foreground">वर्षा</span>
