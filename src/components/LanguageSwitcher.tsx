@@ -39,6 +39,12 @@ export function LanguageSwitcher() {
   const current = profileQuery.data?.language ?? "en";
   const currentLabel = languageOptions.find(o => o.value === current)?.label ?? "English";
 
+  // Sync <html lang> so screen readers use correct pronunciation for the user's language.
+  useEffect(() => {
+    if (typeof document !== "undefined") document.documentElement.lang = current;
+  }, [current]);
+
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
