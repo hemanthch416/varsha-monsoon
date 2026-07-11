@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ListChecks, Plus, Printer, RotateCcw, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
@@ -24,12 +24,15 @@ export default function Checklist() {
     queryKey: ["profile", user?.id],
     queryFn: () => getProfile(user!.id),
     enabled: !!user,
+    // Household profile changes rarely; avoid refetching on every mount / page switch.
+    staleTime: 5 * 60_000,
   });
 
   const query = useQuery<ChecklistRow>({
     queryKey: ["checklist", user?.id],
     queryFn: () => getOrCreateChecklist(user!.id, profileQuery.data ?? null),
     enabled: !!user && !profileQuery.isLoading,
+    staleTime: 60_000,
   });
 
   const mutation = useMutation({
@@ -43,16 +46,24 @@ export default function Checklist() {
 
   const [newLabel, setNewLabel] = useState("");
 
-  const updateItems = (items: ChecklistItem[]) => {
-    if (!query.data) return;
-    queryClient.setQueryData<ChecklistRow>(["checklist", user?.id], { ...query.data, items });
-    mutation.mutate({ id: query.data.id, items });
-  };
 
-  const toggle = (item: ChecklistItem) => {
-    if (!query.data) return;
-    updateItems(query.data.items.map(i => i.id === item.id ? { ...i, done: !i.done } : i));
-  };
+  // Stable callback references let the memoized `ChecklistItemRow` skip re-render
+  // for rows whose item object didn't change during a toggle.
+  const toggle = useCallback((item: ChecklistItem) => {
+    const data = queryClient.getQueryData<ChecklistRow>(["checklist", user?.id]);
+    if (!data) return;
+    const items = data.items.map(i => i.id === item.id ? { ...i, done: !i.done } : i);
+    queryClient.setQueryData<ChecklistRow>(["checklist", user?.id], { ...data, items });
+    mutation.mutate({ id: data.id, items });
+  }, [queryClient, mutation, user?.id]);
+
+  const removeItem = useCallback((id: string) => {
+    const data = queryClient.getQueryData<ChecklistRow>(["checklist", user?.id]);
+    if (!data) return;
+    const items = data.items.filter(i => i.id !== id);
+    queryClient.setQueryData<ChecklistRow>(["checklist", user?.id], { ...data, items });
+    mutation.mutate({ id: data.id, items });
+  }, [queryClient, mutation, user?.id]);
 
   const addCustom = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,13 +73,10 @@ export default function Checklist() {
       toast({ title: "Too long", description: "Keep items under 140 characters.", variant: "destructive" });
       return;
     }
-    updateItems([...query.data.items, { id: crypto.randomUUID(), label, category: "Custom", done: false }]);
+    const items = [...query.data.items, { id: crypto.randomUUID(), label, category: "Custom", done: false }];
+    queryClient.setQueryData<ChecklistRow>(["checklist", user?.id], { ...query.data, items });
+    mutation.mutate({ id: query.data.id, items });
     setNewLabel("");
-  };
-
-  const removeItem = (id: string) => {
-    if (!query.data) return;
-    updateItems(query.data.items.filter(i => i.id !== id));
   };
 
   const resetToPersonalized = async () => {
@@ -165,30 +173,13 @@ export default function Checklist() {
                   <p className="uppercase-label text-muted-foreground mb-6">{category}</p>
                   <ul className="space-y-4">
                     {items.map(item => (
-                      <li key={item.id} className="group flex items-start gap-4">
-                        <Checkbox
-                          checked={item.done}
-                          onCheckedChange={() => toggle(item)}
-                          id={item.id}
-                          className="mt-1 print:hidden"
-                        />
-                        <span className="hidden print:inline mt-0.5">☐</span>
-                        <label
-                          htmlFor={item.id}
-                          className={`flex-1 text-sm md:text-base leading-relaxed cursor-pointer ${item.done ? "line-through text-muted-foreground" : ""}`}
-                        >
-                          {item.label}
-                        </label>
-                        {category === "Custom" && (
-                          <button
-                            onClick={() => removeItem(item.id)}
-                            aria-label="Remove"
-                            className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition print:hidden"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} />
-                          </button>
-                        )}
-                      </li>
+                      <ChecklistItemRow
+                        key={item.id}
+                        item={item}
+                        removable={category === "Custom"}
+                        onToggle={toggle}
+                        onRemove={removeItem}
+                      />
                     ))}
                   </ul>
                 </section>
@@ -200,3 +191,46 @@ export default function Checklist() {
     </AppShell>
   );
 }
+
+/**
+ * Row for a single checklist item. Memoized so that toggling one item — which
+ * produces new object references for only the changed row — doesn't force every
+ * other row in the list to re-render. `onToggle`/`onRemove` from the parent are
+ * wrapped in `useCallback` so their identities stay stable across renders.
+ */
+interface ChecklistItemRowProps {
+  item: ChecklistItem;
+  removable: boolean;
+  onToggle: (item: ChecklistItem) => void;
+  onRemove: (id: string) => void;
+}
+const ChecklistItemRow = memo(function ChecklistItemRow({
+  item, removable, onToggle, onRemove,
+}: ChecklistItemRowProps) {
+  return (
+    <li className="group flex items-start gap-4">
+      <Checkbox
+        checked={item.done}
+        onCheckedChange={() => onToggle(item)}
+        id={item.id}
+        className="mt-1 print:hidden"
+      />
+      <span className="hidden print:inline mt-0.5">☐</span>
+      <label
+        htmlFor={item.id}
+        className={`flex-1 text-sm md:text-base leading-relaxed cursor-pointer ${item.done ? "line-through text-muted-foreground" : ""}`}
+      >
+        {item.label}
+      </label>
+      {removable && (
+        <button
+          onClick={() => onRemove(item.id)}
+          aria-label={`Remove ${item.label}`}
+          className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition print:hidden"
+        >
+          <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden="true" />
+        </button>
+      )}
+    </li>
+  );
+});

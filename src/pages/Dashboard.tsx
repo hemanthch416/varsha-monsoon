@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { ArrowRight, RefreshCw, ThermometerSun, ShieldAlert, Droplets, ListChecks } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { SeverityBadge } from "@/components/SeverityBadge";
@@ -291,7 +291,9 @@ export default function Dashboard() {
   );
 }
 
-function WatchHero({ state }: { state: ReturnType<typeof useAlertState>["state"] }) {
+// Hero variants are memoized: the countdown clock re-renders the Dashboard
+// every second in BEFORE state, and these subtrees don't depend on that tick.
+const WatchHero = memo(function WatchHero({ state }: { state: ReturnType<typeof useAlertState>["state"] }) {
   const countdown = state.eventStart ? formatCountdown(state.eventStart) : null;
   return (
     <section className={cn("border-t border-border pt-8", state.severity !== "normal" && severityBorderClass[state.severity], state.severity !== "normal" && "border-l-2 pl-6")}>
@@ -312,9 +314,9 @@ function WatchHero({ state }: { state: ReturnType<typeof useAlertState>["state"]
       )}
     </section>
   );
-}
+});
 
-function UrgentHero({ state }: { state: ReturnType<typeof useAlertState>["state"] }) {
+const UrgentHero = memo(function UrgentHero({ state }: { state: ReturnType<typeof useAlertState>["state"] }) {
   return (
     <section
       className="border-l-2 border-severity-severe bg-severity-severe/5 pl-6 pr-6 py-8 rounded-sm"
@@ -329,9 +331,9 @@ function UrgentHero({ state }: { state: ReturnType<typeof useAlertState>["state"
       <p className="mt-3 text-foreground/80 max-w-2xl font-light leading-relaxed">{state.description}</p>
     </section>
   );
-}
+});
 
-function RecoveryHero({ state }: { state: ReturnType<typeof useAlertState>["state"] }) {
+const RecoveryHero = memo(function RecoveryHero({ state }: { state: ReturnType<typeof useAlertState>["state"] }) {
   return (
     <section className="border-t border-border pt-8">
       <div className="flex items-center gap-3 mb-4">
@@ -342,10 +344,10 @@ function RecoveryHero({ state }: { state: ReturnType<typeof useAlertState>["stat
       <p className="mt-3 text-muted-foreground max-w-2xl font-light leading-relaxed">{state.description}</p>
     </section>
   );
-}
+});
 
 
-function ChecklistLinkSection() {
+const ChecklistLinkSection = memo(function ChecklistLinkSection() {
   return (
     <section className="border-l-2 border-severity-severe pl-6">
       <div className="flex items-center gap-2 mb-4">
@@ -358,9 +360,9 @@ function ChecklistLinkSection() {
       <Button asChild variant="outline" size="sm"><Link to="/checklist">Open full checklist</Link></Button>
     </section>
   );
-}
+});
 
-function RainStrip({ hourly }: { hourly: { time: string; rainMm: number; precipProb: number }[] }) {
+const RainStrip = memo(function RainStrip({ hourly }: { hourly: { time: string; rainMm: number; precipProb: number }[] }) {
   const max = Math.max(1, ...hourly.map(h => h.rainMm));
   return (
     <div className="flex items-end gap-1 h-24">
@@ -380,4 +382,4 @@ function RainStrip({ hourly }: { hourly: { time: string; rainMm: number; precipP
       })}
     </div>
   );
-}
+});
