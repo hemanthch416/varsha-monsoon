@@ -40,7 +40,10 @@ export function LanguageSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="uppercase-label text-muted-foreground hover:text-foreground transition border border-border rounded-full px-3 py-1.5">
+      <DropdownMenuTrigger
+        aria-label={`Change language, current language ${currentLabel}`}
+        className="uppercase-label text-muted-foreground hover:text-foreground transition border border-border rounded-full px-3 py-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      >
         {currentLabel}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
