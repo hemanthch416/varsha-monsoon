@@ -1,19 +1,27 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchWeather } from "@/services/weather";
+import { useQuery, type UseQueryResult } from "@tanstack/react-query";
+import { fetchWeather, type WeatherData } from "@/services/weather";
+import {
+  STALE_TIME_MS,
+  WEATHER_POLL_INTERVAL_MS,
+  WEATHER_RETRY_BASE_MS,
+  WEATHER_RETRY_COUNT,
+  WEATHER_RETRY_MAX_MS,
+} from "@/config/constants";
 
-// Poll every 15 minutes with exponential backoff on failure.
-// React Query caches the result across pages via the shared client, so navigating
-// between /dashboard, /travel, /assistant does not refire the request.
-export function useWeather(city: string | null | undefined) {
-  return useQuery({
+/**
+ * Cached, polling weather query. React Query shares this cache across pages so
+ * navigating between /dashboard, /travel, and /assistant does not refire the
+ * request. Retries back off exponentially and cap at {@link WEATHER_RETRY_MAX_MS}.
+ */
+export function useWeather(city: string | null | undefined): UseQueryResult<WeatherData | null, Error> {
+  return useQuery<WeatherData | null, Error>({
     queryKey: ["weather", city],
     queryFn: () => fetchWeather(city!),
     enabled: !!city,
-    staleTime: 10 * 60_000,
-    refetchInterval: 15 * 60_000,
+    staleTime: STALE_TIME_MS.long,
+    refetchInterval: WEATHER_POLL_INTERVAL_MS,
     refetchIntervalInBackground: false,
-    retry: 4,
-    // 30s, 1m, 2m, 4m, capped at 5m
-    retryDelay: attempt => Math.min(30_000 * 2 ** attempt, 5 * 60_000),
+    retry: WEATHER_RETRY_COUNT,
+    retryDelay: attempt => Math.min(WEATHER_RETRY_BASE_MS * 2 ** attempt, WEATHER_RETRY_MAX_MS),
   });
 }

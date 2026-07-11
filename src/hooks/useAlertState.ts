@@ -3,6 +3,7 @@ import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { listAlerts } from "@/services/alerts";
 import { useWeather } from "./useWeather";
 import { deriveAlertState, type AlertState } from "@/utils/alertEngine";
+import { STALE_TIME_MS } from "@/config/constants";
 import type { Alert } from "@/types";
 
 export interface AlertStateResult {
@@ -13,9 +14,17 @@ export interface AlertStateResult {
   dismissTransition: () => void;
 }
 
+/**
+ * Combines the alerts table and live weather warnings into a single AlertState,
+ * and tracks status transitions so the AlertBanner can announce changes.
+ */
 export function useAlertState(city: string | null | undefined): AlertStateResult {
   const weather = useWeather(city);
-  const alerts = useQuery<Alert[], Error>({ queryKey: ["alerts"], queryFn: listAlerts, staleTime: 5 * 60_000 });
+  const alerts = useQuery<Alert[], Error>({
+    queryKey: ["alerts"],
+    queryFn: listAlerts,
+    staleTime: STALE_TIME_MS.medium,
+  });
 
   const state = deriveAlertState(alerts.data ?? [], weather.data ?? null);
 

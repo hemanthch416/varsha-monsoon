@@ -93,10 +93,12 @@ export default function Checklist() {
       (acc[it.category] ||= []).push(it);
       return acc;
     }, {});
-    return CHECKLIST_CATEGORY_ORDER
+    const ordered: [string, ChecklistItem[]][] = CHECKLIST_CATEGORY_ORDER
       .filter(c => map[c]?.length)
-      .map(c => [c, map[c]] as const)
-      .concat(Object.entries(map).filter(([c]) => !(CHECKLIST_CATEGORY_ORDER as readonly string[]).includes(c)));
+      .map(c => [c, map[c]]);
+    const extras: [string, ChecklistItem[]][] = Object.entries(map)
+      .filter(([c]) => !(CHECKLIST_CATEGORY_ORDER as readonly string[]).includes(c));
+    return [...ordered, ...extras];
   }, [query.data]);
 
   const totalDone = (query.data?.items ?? []).filter(i => i.done).length;

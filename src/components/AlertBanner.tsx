@@ -72,7 +72,7 @@ export function AlertBanner() {
             ? <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" strokeWidth={1.75} aria-hidden="true" />
             : <Info className="h-4 w-4 mt-0.5 shrink-0" strokeWidth={1.75} aria-hidden="true" />}
           <div className="flex-1">
-            <p className="uppercase-label opacity-90">Alert status changed → {STATUS_LABEL[transition!.to]}</p>
+            <p className="uppercase-label opacity-90">Alert status changed → {alertStatusLabel[transition!.to]}</p>
             <p className="mt-1 font-light">{state.headline}</p>
           </div>
           <button
