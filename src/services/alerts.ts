@@ -1,9 +1,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Alert } from "@/types";
-import { mockAlerts } from "./mockData";
 
-// Fetches active alerts; falls back to mock data when the alerts table is empty
-// so the scaffolded app is never blank.
+/**
+ * Fetch the 20 most recent alerts (any status).
+ * Returns an empty array when the table has no rows — callers should render an
+ * appropriate empty state rather than fall back to sample data.
+ */
 export async function listAlerts(): Promise<Alert[]> {
   const { data, error } = await supabase
     .from("alerts")
@@ -11,6 +13,5 @@ export async function listAlerts(): Promise<Alert[]> {
     .order("starts_at", { ascending: false })
     .limit(20);
   if (error) throw error;
-  const rows = (data ?? []) as Alert[];
-  return rows.length > 0 ? rows : mockAlerts;
+  return (data ?? []) as Alert[];
 }

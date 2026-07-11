@@ -1,7 +1,18 @@
 import type { ChecklistItem, Profile } from "@/types";
 
-// Build a household-tailored default checklist from the profile.
-// Categories: Essentials, Power, Documents, Health, Safety, Contacts, Elderly, Children, Pets, Home.
+/**
+ * Build a personalized default emergency checklist from a household profile.
+ *
+ * Adds always-included baseline items (water, food, docs, first aid, contacts)
+ * scaled by `household_size`, then conditionally appends items when profile
+ * flags are set: elderly (medication, mobility, glasses), children (formula,
+ * comfort item, ID card), pets (food, carrier, vaccination records), and
+ * housing-specific items (sandbags for ground floor / low-lying, river-level
+ * monitoring for near-river, stairwell/whistle for high-rise).
+ *
+ * @param profile Household profile or `null` (a null profile yields the baseline for one person).
+ * @returns A flat list of `ChecklistItem`s with fresh UUIDs; caller persists them.
+ */
 export function buildPersonalizedChecklist(profile: Profile | null): ChecklistItem[] {
   const items: ChecklistItem[] = [];
   const add = (category: string, label: string) => {
