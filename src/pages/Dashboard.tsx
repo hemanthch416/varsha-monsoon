@@ -291,7 +291,9 @@ export default function Dashboard() {
   );
 }
 
-function WatchHero({ state }: { state: ReturnType<typeof useAlertState>["state"] }) {
+// Hero variants are memoized: the countdown clock re-renders the Dashboard
+// every second in BEFORE state, and these subtrees don't depend on that tick.
+const WatchHero = memo(function WatchHero({ state }: { state: ReturnType<typeof useAlertState>["state"] }) {
   const countdown = state.eventStart ? formatCountdown(state.eventStart) : null;
   return (
     <section className={cn("border-t border-border pt-8", state.severity !== "normal" && severityBorderClass[state.severity], state.severity !== "normal" && "border-l-2 pl-6")}>
