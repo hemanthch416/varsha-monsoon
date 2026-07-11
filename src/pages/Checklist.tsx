@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ListChecks, Plus, Printer, RotateCcw, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
