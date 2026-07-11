@@ -70,7 +70,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Link to="/" className="font-serif italic text-lg">Varsha</Link>
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon"><Menu className="h-5 w-5" strokeWidth={1.5} /></Button>
+              <Button variant="ghost" size="icon" aria-label="Open navigation menu"><Menu className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" /></Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-64">
               <div className="mt-10"><NavItems /></div>
