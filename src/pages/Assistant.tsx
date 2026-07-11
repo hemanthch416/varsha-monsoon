@@ -111,7 +111,6 @@ export default function Assistant() {
           )}
         </div>
 
-        <form onSubmit={(e) => { e.preventDefault(); send(input); }} className="mt-6 flex gap-2 border-t border-border pt-6">
         <form onSubmit={(e) => { e.preventDefault(); send(input); }} className="mt-6 flex gap-2 border-t border-border pt-6" aria-label="Send a message to the assistant">
           <label htmlFor="assistant-input" className="sr-only">Your question</label>
           <Input id="assistant-input" value={input} onChange={e => setInput(e.target.value)} placeholder="Ask about preparedness, alerts, or safety…"
