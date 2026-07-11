@@ -24,12 +24,15 @@ export default function Checklist() {
     queryKey: ["profile", user?.id],
     queryFn: () => getProfile(user!.id),
     enabled: !!user,
+    // Household profile changes rarely; avoid refetching on every mount / page switch.
+    staleTime: 5 * 60_000,
   });
 
   const query = useQuery<ChecklistRow>({
     queryKey: ["checklist", user?.id],
     queryFn: () => getOrCreateChecklist(user!.id, profileQuery.data ?? null),
     enabled: !!user && !profileQuery.isLoading,
+    staleTime: 60_000,
   });
 
   const mutation = useMutation({
