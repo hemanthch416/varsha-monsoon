@@ -47,17 +47,17 @@ export function AlertBanner() {
           aria-label="Active emergency banner"
         >
           <div className="flex items-start gap-3 flex-wrap">
-            <ShieldAlert className="h-4 w-4 mt-0.5 shrink-0" strokeWidth={1.75} />
+            <ShieldAlert className="h-4 w-4 mt-0.5 shrink-0" strokeWidth={1.75} aria-hidden="true" />
             <div className="flex-1 min-w-[240px]">
               <p className="uppercase-label opacity-90">Active emergency</p>
               <p className="mt-1 font-light text-sm">{state.headline}</p>
             </div>
             <div className="flex items-center gap-4 shrink-0 text-sm">
-              <a href="tel:112" className="flex items-center gap-1.5 font-serif text-lg hover:underline">
-                <Phone className="h-3 w-3" strokeWidth={2} /> 112
+              <a href="tel:112" aria-label="Call national emergency number 1 1 2" className="flex items-center gap-1.5 font-serif text-lg hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-severity-severe-foreground rounded">
+                <Phone className="h-3 w-3" strokeWidth={2} aria-hidden="true" /> 112
               </a>
               {stateHelp && (
-                <a href={`tel:${stateHelp.number}`} className="hidden sm:flex items-center gap-1.5 font-serif text-base hover:underline opacity-90">
+                <a href={`tel:${stateHelp.number}`} aria-label={`Call state helpline ${stateHelp.number}`} className="hidden sm:flex items-center gap-1.5 font-serif text-base hover:underline opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-severity-severe-foreground rounded">
                   {stateHelp.number}
                 </a>
               )}
@@ -75,20 +75,21 @@ export function AlertBanner() {
             transition!.to === "after" && "bg-severity-normal text-severity-normal-foreground border-severity-normal",
           )}
           role="status"
+          aria-live="polite"
         >
           {transition!.to === "before"
-            ? <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" strokeWidth={1.75} />
-            : <Info className="h-4 w-4 mt-0.5 shrink-0" strokeWidth={1.75} />}
+            ? <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" strokeWidth={1.75} aria-hidden="true" />
+            : <Info className="h-4 w-4 mt-0.5 shrink-0" strokeWidth={1.75} aria-hidden="true" />}
           <div className="flex-1">
             <p className="uppercase-label opacity-90">Alert status changed → {STATUS_LABEL[transition!.to]}</p>
             <p className="mt-1 font-light">{state.headline}</p>
           </div>
           <button
             onClick={() => { setTransitionDismissed(true); dismissTransition(); }}
-            aria-label="Dismiss notification"
-            className="opacity-80 hover:opacity-100 mt-0.5"
+            aria-label="Dismiss alert status notification"
+            className="opacity-80 hover:opacity-100 mt-0.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-current"
           >
-            <X className="h-4 w-4" strokeWidth={1.75} />
+            <X className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
           </button>
         </div>
       )}

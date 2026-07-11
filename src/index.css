@@ -42,7 +42,7 @@
     --sev-normal-foreground: 40 30% 97%;
     --sev-watch: 38 70% 48%;
     --sev-watch-foreground: 30 40% 12%;
-    --sev-warning: 25 70% 45%;
+    --sev-warning: 22 78% 38%;
     --sev-warning-foreground: 40 30% 97%;
     --sev-severe: 12 60% 42%;
     --sev-severe-foreground: 40 30% 97%;
@@ -96,9 +96,12 @@
     --sev-normal: 155 40% 50%;
     --sev-watch: 38 75% 60%;
     --sev-watch-foreground: 30 40% 10%;
-    --sev-warning: 25 75% 58%;
-    --sev-severe: 12 65% 55%;
-    --sev-emergency: 0 70% 55%;
+    --sev-warning: 22 78% 42%;
+    --sev-warning-foreground: 40 30% 97%;
+    --sev-severe: 12 65% 45%;
+    --sev-severe-foreground: 40 30% 97%;
+    --sev-emergency: 0 70% 45%;
+    --sev-emergency-foreground: 40 30% 97%;
 
     --gradient-mist: linear-gradient(180deg, hsl(0 0% 0% / 0) 0%, hsl(0 0% 0% / 0.75) 100%);
     --gradient-monsoon: linear-gradient(160deg, hsl(210 40% 10%) 0%, hsl(220 45% 6%) 100%);

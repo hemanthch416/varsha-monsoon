@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,9 +39,18 @@ export function LanguageSwitcher() {
   const current = profileQuery.data?.language ?? "en";
   const currentLabel = languageOptions.find(o => o.value === current)?.label ?? "English";
 
+  // Sync <html lang> so screen readers use correct pronunciation for the user's language.
+  useEffect(() => {
+    if (typeof document !== "undefined") document.documentElement.lang = current;
+  }, [current]);
+
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="uppercase-label text-muted-foreground hover:text-foreground transition border border-border rounded-full px-3 py-1.5">
+      <DropdownMenuTrigger
+        aria-label={`Change language, current language ${currentLabel}`}
+        className="uppercase-label text-muted-foreground hover:text-foreground transition border border-border rounded-full px-3 py-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      >
         {currentLabel}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
