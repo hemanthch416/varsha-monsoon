@@ -112,11 +112,13 @@ export default function Assistant() {
         </div>
 
         <form onSubmit={(e) => { e.preventDefault(); send(input); }} className="mt-6 flex gap-2 border-t border-border pt-6">
-          <Input value={input} onChange={e => setInput(e.target.value)} placeholder="Ask about preparedness, alerts, or safety…"
-            className="border-0 bg-secondary rounded-full px-5 h-11 focus-visible:ring-1" />
-          <Button type="submit" disabled={!input.trim() || sendMutation.isPending}
-            className="rounded-full h-11 px-5 bg-foreground text-background hover:bg-foreground/90">
-            <Send className="h-4 w-4" strokeWidth={1.5} />
+        <form onSubmit={(e) => { e.preventDefault(); send(input); }} className="mt-6 flex gap-2 border-t border-border pt-6" aria-label="Send a message to the assistant">
+          <label htmlFor="assistant-input" className="sr-only">Your question</label>
+          <Input id="assistant-input" value={input} onChange={e => setInput(e.target.value)} placeholder="Ask about preparedness, alerts, or safety…"
+            className="border-0 bg-secondary rounded-full px-5 h-11 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" />
+          <Button type="submit" disabled={!input.trim() || sendMutation.isPending} aria-label="Send message"
+            className="rounded-full h-11 px-5 bg-foreground text-background hover:bg-foreground/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+            <Send className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
           </Button>
         </form>
       </div>
