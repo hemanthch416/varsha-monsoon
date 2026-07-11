@@ -13,6 +13,7 @@ const STATIC_PATTERNS: RegExp[] = [
   /^https:\/\/[a-z0-9-]+\.lovable\.app$/,
   /^https:\/\/[a-z0-9-]+\.lovable\.dev$/,
   /^https:\/\/[a-z0-9-]+\.lovableproject\.com$/,
+  /^https:\/\/[a-z0-9-]+\.vercel\.app$/,
 ];
 
 function extraOrigins(): string[] {
