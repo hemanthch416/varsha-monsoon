@@ -6,6 +6,10 @@ guidance — before, during, and after severe weather events.
 
 ---
 
+For Live demo, Do use below credentials:
+**_Email_** : hemanthsai1566@gmail.com
+**_Password_**: HotW@ter#09
+
 ## What the app does
 
 - **Personalised preparedness plans** generated from the household profile
