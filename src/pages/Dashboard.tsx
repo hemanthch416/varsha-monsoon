@@ -331,9 +331,9 @@ const UrgentHero = memo(function UrgentHero({ state }: { state: ReturnType<typeo
       <p className="mt-3 text-foreground/80 max-w-2xl font-light leading-relaxed">{state.description}</p>
     </section>
   );
-}
+});
 
-function RecoveryHero({ state }: { state: ReturnType<typeof useAlertState>["state"] }) {
+const RecoveryHero = memo(function RecoveryHero({ state }: { state: ReturnType<typeof useAlertState>["state"] }) {
   return (
     <section className="border-t border-border pt-8">
       <div className="flex items-center gap-3 mb-4">
