@@ -13,10 +13,18 @@ const schema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters").max(72, "Password is too long"),
 });
 
+const signupSchema = schema.extend({
+  confirmPassword: z.string(),
+}).refine((d) => d.password === d.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
+
 export default function Auth() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -30,7 +38,9 @@ export default function Auth() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = schema.safeParse({ email, password });
+    const parsed = mode === "signup"
+      ? signupSchema.safeParse({ email, password, confirmPassword })
+      : schema.safeParse({ email, password });
     if (!parsed.success) {
       toast({ title: "Invalid input", description: parsed.error.errors[0].message, variant: "destructive" });
       return;
@@ -46,7 +56,11 @@ export default function Auth() {
           options: { emailRedirectTo: `${window.location.origin}/dashboard` },
         });
         if (error) throw error;
-        toast({ title: "Check your email", description: "Confirm your address to finish signing up." });
+        toast({ title: "Check your email", description: "Confirm your address, then sign in." });
+        // Switch to sign-in so the user isn't stuck on the signup form staring at their credentials.
+        setMode("signin");
+        setPassword("");
+        setConfirmPassword("");
       }
     } catch (err) {
       // Translate common Supabase auth errors into plain-English messages.
@@ -122,12 +136,21 @@ export default function Auth() {
                 </p>
               )}
             </div>
+            {mode === "signup" && (
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="uppercase-label text-muted-foreground">Confirm password</Label>
+                <Input id="confirmPassword" type={showPassword ? "text" : "password"} value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  minLength={8} autoComplete="new-password"
+                  className="border-0 border-b border-border rounded-none bg-transparent px-0 focus-visible:ring-0 focus-visible:border-foreground" required />
+              </div>
+            )}
             <Button type="submit" className="w-full rounded-full uppercase-label py-6 bg-foreground text-background hover:bg-foreground/90" disabled={loading}>
               {loading ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
             </Button>
           </form>
           <button
-            onClick={() => setMode(m => m === "signin" ? "signup" : "signin")}
+            onClick={() => { setMode(m => m === "signin" ? "signup" : "signin"); setConfirmPassword(""); }}
             className="mt-8 uppercase-label text-muted-foreground hover:text-foreground w-full text-center transition"
           >
             {mode === "signin" ? "Need an account? Sign up" : "Already have an account? Sign in"}
