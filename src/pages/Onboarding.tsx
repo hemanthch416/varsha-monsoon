@@ -27,9 +27,11 @@ export default function Onboarding() {
 
   const mutation = useMutation({
     mutationFn: (input: OnboardingInput) => completeOnboarding(user!.id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile", user?.id] });
-      navigate("/dashboard");
+    onSuccess: (profile) => {
+      // Write fresh profile into cache so ProtectedRoute sees onboarded=true
+      // immediately, otherwise the stale cached profile bounces us back here.
+      queryClient.setQueryData(["profile", user?.id], profile);
+      navigate("/dashboard", { replace: true });
     },
     onError: (err) => toast({
       title: "Could not save",
