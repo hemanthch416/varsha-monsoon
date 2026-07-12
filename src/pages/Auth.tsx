@@ -150,7 +150,7 @@ export default function Auth() {
             </Button>
           </form>
           <button
-            onClick={() => setMode(m => m === "signin" ? "signup" : "signin")}
+            onClick={() => { setMode(m => m === "signin" ? "signup" : "signin"); setConfirmPassword(""); }}
             className="mt-8 uppercase-label text-muted-foreground hover:text-foreground w-full text-center transition"
           >
             {mode === "signin" ? "Need an account? Sign up" : "Already have an account? Sign in"}
