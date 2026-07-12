@@ -136,6 +136,15 @@ export default function Auth() {
                 </p>
               )}
             </div>
+            {mode === "signup" && (
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="uppercase-label text-muted-foreground">Confirm password</Label>
+                <Input id="confirmPassword" type={showPassword ? "text" : "password"} value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  minLength={8} autoComplete="new-password"
+                  className="border-0 border-b border-border rounded-none bg-transparent px-0 focus-visible:ring-0 focus-visible:border-foreground" required />
+              </div>
+            )}
             <Button type="submit" className="w-full rounded-full uppercase-label py-6 bg-foreground text-background hover:bg-foreground/90" disabled={loading}>
               {loading ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
             </Button>
