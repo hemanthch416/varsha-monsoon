@@ -38,7 +38,9 @@ export default function Auth() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = schema.safeParse({ email, password });
+    const parsed = mode === "signup"
+      ? signupSchema.safeParse({ email, password, confirmPassword })
+      : schema.safeParse({ email, password });
     if (!parsed.success) {
       toast({ title: "Invalid input", description: parsed.error.errors[0].message, variant: "destructive" });
       return;
@@ -54,7 +56,11 @@ export default function Auth() {
           options: { emailRedirectTo: `${window.location.origin}/dashboard` },
         });
         if (error) throw error;
-        toast({ title: "Check your email", description: "Confirm your address to finish signing up." });
+        toast({ title: "Check your email", description: "Confirm your address, then sign in." });
+        // Switch to sign-in so the user isn't stuck on the signup form staring at their credentials.
+        setMode("signin");
+        setPassword("");
+        setConfirmPassword("");
       }
     } catch (err) {
       // Translate common Supabase auth errors into plain-English messages.
